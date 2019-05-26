@@ -1,0 +1,70 @@
+{
+  "gameofthrones": [
+    {
+      "id": 1,
+      "first_name": "Jon",
+      "last_name": "Snow",
+      "gender": "m",
+      "age": 14,
+      "location": "Winterfell",
+      "is_sean_bean": false,
+      "lives_remaining": null,
+      "alliances": ["Stark", "Targaryen", "Free Folk"]
+    },
+    {
+      "id": 2,
+      "first_name": "Eddard",
+      "last_name": "Stark",
+      "gender": "m",
+      "age": 35,
+      "location": "Winterfell",
+      "is_sean_bean": true,
+      "lives_remaining": 0,
+      "alliances": ["Stark", "Baratheon"]
+    },
+    {
+      "id": 3,
+      "first_name": "Catelyn",
+      "last_name": "Stark",
+      "gender": "f",
+      "age": 33,
+      "location": "Winterfell",
+      "is_sean_bean": null,
+      "lives_remaining": 0,
+      "alliances": ["Stark", "Arryn"]
+    },
+    {
+      "id": 4,
+      "first_name": "Roose",
+      "last_name": "Bolton",
+      "gender": "m",
+      "age": 40,
+      "location": "Dreadfort",
+      "is_sean_bean": false,
+      "lives_remaining": 0,
+      "alliances": ["Bolton", "Lannister"]
+    },
+    {
+      "id": 5,
+      "first_name": "Ramsay",
+      "last_name": "Snow",
+      "gender": "m",
+      "age": 15,
+      "location": "Dreadfort",
+      "is_sean_bean": false,
+      "lives_remaining": 0,
+      "alliances": ["Bolton"]
+    },
+    {
+      "id": 6,
+      "first_name": "Arya",
+      "last_name": "Stark",
+      "gender": "f",
+      "age": 14,
+      "location": "Sea",
+      "is_sean_bean": null,
+      "lives_remaining": 1,
+      "alliances": ["Stark"]
+    }
+  ]
+}

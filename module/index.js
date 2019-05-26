@@ -1,10 +1,11 @@
 class KeyQL  {
 
-  query (dataset = [], keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
+  select (dataset = [], keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
     let query = this.validateQuery(keyQLQuery);
     let limit = this.validateLimit(keyQLLimit);
+    let transform = this.validateMapFunction(mapFunction);
     return dataset
-      .filter(data => this.queryItem(query, mapFunction(data)))
+      .filter(data => this.queryItem(query, transform(data)))
       .slice(limit.offset, limit.count ? limit.offset + limit.count : dataset.length);
   }
 
@@ -20,7 +21,13 @@ class KeyQL  {
   matchQueryEntry (keyQLQueryEntry, item) {
     for (let i = 0; i < keyQLQueryEntry.length; i++) {
       let statement = keyQLQueryEntry[i];
-      if (!statement.compare(item[statement.key], statement.value)) {
+      let result;
+      try {
+        result = statement.compare(item[statement.key], statement.value)
+      } catch (e) {
+        throw new Error(`Could not compare values. Please make sure your mapFunction is returning a valid object.`);
+      }
+      if (!result) {
         return false;
       }
     }
@@ -56,15 +63,21 @@ class KeyQL  {
   }
 
   validateLimit (keyQLLimit) {
-    if (!keyQLLimit || typeof keyQLLimit !== 'object') {
+    if (!keyQLLimit || typeof keyQLLimit !== 'object' || Array.isArray(keyQLLimit)) {
       throw new Error('KeyQL Limit object must be a valid object');
     }
-    if (!(
-      Object.keys(keyQLLimit).length === 2
-      && keyQLLimit.hasOwnProperty('offset')
-      && keyQLLimit.hasOwnProperty('count')
-    )) {
-      throw new Error('KeyQL Limit object must contain "offset" and "count"');
+    keyQLLimit = Object.keys(keyQLLimit).reduce((limit, key) => {
+      limit[key] = keyQLLimit[key];
+      return limit;
+    }, {});
+    keyQLLimit.offset = keyQLLimit.hasOwnProperty('offset')
+      ? keyQLLimit.offset
+      : 0;
+    keyQLLimit.count = keyQLLimit.hasOwnProperty('count')
+      ? keyQLLimit.count
+      : 0;
+    if (Object.keys(keyQLLimit).length !== 2) {
+      throw new Error('KeyQL Limit object must only contain "offset" and "count" properties');
     }
     if (!(
       parseInt(keyQLLimit.offset) === keyQLLimit.offset
@@ -75,6 +88,13 @@ class KeyQL  {
       throw new Error('KeyQL Limit "offset" and "count" must be integers and greater than or equal to 0');
     }
     return keyQLLimit;
+  }
+
+  validateMapFunction (mapFunction) {
+    if (typeof mapFunction !== 'function') {
+      throw new Error('KeyQL mapFunction must be a valid function');
+    }
+    return mapFunction;
   }
 
 }
