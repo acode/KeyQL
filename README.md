@@ -1,5 +1,7 @@
 # KeyQL
 
+![travis-ci build](https://travis-ci.org/FunctionScript/KeyQL.svg?branch=master)
+
 KeyQL is a language for querying datasets using key-value pairs. It is primarily
 intended to be used with [FunctionScript](https://github.com/FunctionScript/functionscript)
 APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
