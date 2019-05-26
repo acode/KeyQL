@@ -1,0 +1,11 @@
+{
+  "name": "keyql",
+  "version": "0.0.0",
+  "description": "A language for querying datasets using key-value pairs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Keith Horwood <keithwhor@gmail.com>",
+  "license": "MIT"
+}
