@@ -123,7 +123,7 @@ You could write a query against it that returns...
 
 ## Supported Operators
 
-All operators in KeySQL queries are preceded by a `__` delimiter. To reiterate
+All operators in KeyQL queries are preceded by a `__` delimiter. To reiterate
 from the previous section, this means you can query the field `first_name` with;
 
 ```javascript
