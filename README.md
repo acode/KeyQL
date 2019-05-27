@@ -3,8 +3,9 @@
 ![travis-ci build](https://travis-ci.org/FunctionScript/KeyQL.svg?branch=master)
 ![npm version](https://badge.fury.io/js/keyql.svg)
 
-KeyQL is a language for querying datasets using key-value pairs. It is primarily
-intended to be used with [FunctionScript](https://github.com/FunctionScript/FunctionScript)
+KeyQL is a language for querying datasets using key-value pairs. The provided
+package can be used to filter large JSON datasets in Node.js, but the primary
+purpose of KeyQL is to be used with [FunctionScript](https://github.com/FunctionScript/FunctionScript)
 APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
 query requests to underlying datasets.
 
