@@ -1,4 +1,5 @@
 const moment = require('moment');
+moment.suppressDeprecationWarnings = true;
 
 class KeyQL  {
 
@@ -159,7 +160,7 @@ KeyQL.OPERATORS = {
   'is_upcoming': (a, b) => {
     let delta;
     try {
-      delta = new moment.parseZone(a).valueOf() - moment.now();
+      delta = moment.parseZone(a).valueOf() - moment.now();
     } catch (e) {
       delta = NaN;
     }
