@@ -1,11 +1,26 @@
 # KeyQL
 
 ![travis-ci build](https://travis-ci.org/FunctionScript/KeyQL.svg?branch=master)
+![npm version](https://badge.fury.io/js/keyql.svg)
 
 KeyQL is a language for querying datasets using key-value pairs. It is primarily
 intended to be used with [FunctionScript](https://github.com/FunctionScript/functionscript)
 APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
 query requests to underlying datasets.
+
+# Table of Contents
+
+1. [Introduction](#introduction)
+1. [Specification](#specification)
+   1. [Writing Queries](#writing-queries)
+   1. [Supported Operators](#supported-operators)
+1. [Installation and Usage](#installation-and-usage)
+   1. [Methods](#methods)
+1. [Comparison to GraphQL](#comparison-to-graphql)
+1. [Acknowledgements](#acknowledgements)
+   1. [Roadmap](#roadmap)
+
+# Introduction
 
 By adhering to the KeyQL specification, your developers and users will have a
 significantly easier time learning how to work with your APIs and datasets.
@@ -41,19 +56,7 @@ With the intended response being something like:
 The KeyQL specification removes the cognitive overhead of choosing how to
 structure your query requests.
 
-## Comparison vs. GraphQL
-
-KeyQL is not meant to act as a stand-in or replacement for GraphQL. You can
-think of it more like a lightweight cousin: a midpoint between the wild-west of
-loosely opinionated SOAP and REST requests and the highly-structured, opinionated
-and complex world of GraphQL.
-
-Whereas GraphQL provides an interface and opinions around manipulating large,
-graph-structured datasets and can define an entire backend architecture,
-KeyQL takes a more minimalistic and piecemeal approach -- providing a simple
-structure for writing queries using JSON.
-
-## Specification
+# Specification
 
 The KeyQL specification is heavily inspired by [Django](https://www.djangoproject.com/)'s ORM
 and over five years of work manipulating datasets on both the front and back-end
@@ -61,7 +64,7 @@ of web projects, primarily working with JSON and SQL queries. It's the culminati
 of best practices learned implementing [DataCollection.js](https://github.com/keithwhor/DataCollection.js) and
 [Nodal](https://github.com/keithwhor/nodal)'s ORM.
 
-### Writing Queries
+## Writing Queries
 
 Writing KeyQL Queries is as simple as preparing a JSON Object. For example,
 in a dataset that has records that look like...
@@ -83,7 +86,7 @@ in a dataset that has records that look like...
 
 You could write a query against it that returns...
 
-#### Query: All entries with `first_name` = `Dolores`
+### Query: All entries with `first_name` = `Dolores`
 
 ```json
 [
@@ -93,7 +96,7 @@ You could write a query against it that returns...
 ]
 ```
 
-#### Query: `first_name` = `Dolores` AND `eye_color` in `blue`, `green`
+### Query: `first_name` = `Dolores` AND `eye_color` in `blue`, `green`
 
 ```json
 [
@@ -104,7 +107,7 @@ You could write a query against it that returns...
 ]
 ```
 
-#### Query: `first_name` = `Dolores` OR `first_name` = `Teddy`
+### Query: `first_name` = `Dolores` OR `first_name` = `Teddy`
 
 ```json
 [
@@ -117,7 +120,7 @@ You could write a query against it that returns...
 ]
 ```
 
-### Supported Operators
+## Supported Operators
 
 All operators in KeySQL queries are preceded by a `__` delimiter. To reiterate
 from the previous section, this means you can query the field `first_name` with;
@@ -129,7 +132,7 @@ from the previous section, this means you can query the field `first_name` with;
 "first_name__gte"
 ```
 
-#### Full List of Supported Operators
+### Full List of Supported Operators
 
 The following table assumes that `queryValue` is the value you're searching for
 provided a specified key, and `entryValue` is the matching entry in a dataset.
@@ -159,7 +162,7 @@ provided a specified key, and `entryValue` is the matching entry in a dataset.
 | is_recent | Finds all entries where `DATE(entryValue)` is within the last `queryValue` in number of seconds. i.e. `"field__is_recent": 3600` would look for entries that have `field` as a date/timestamp that has happened in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
 | is_upcoming | Finds all entries where `DATE(entryValue)` is going to occur within the next `queryValue` in number of seconds. i.e. `"field__is_upcoming": 3600` would look for entries that have `field` as a date/timestamp that is going to happen in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
 
-## Installation and Usage
+# Installation and Usage
 
 The KeyQL implementation provided as part of this GitHub repository is intended
 for use in the Node.js ecosystem, using the package `keyql`. Right now, it can
@@ -179,12 +182,12 @@ And use it in your Node.js project with:
 const KeyQL = require('keyql');
 ```
 
-### Methods
+## Methods
 
 As of right now, KeyQL supports two methods when querying native JavaScript datasets:
 `select()` and `update()`:
 
-#### KeyQL.select
+### KeyQL.select
 
 ```
 select (dataset = [], keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v)
@@ -222,7 +225,7 @@ values. For example, in the case of something like:
 
 We would provide the **`mapFunction`** as `v => v.fields` instead.
 
-#### KeyQL.update
+### KeyQL.update
 
 ```
 update (dataset = [], fields = {}, keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
@@ -234,11 +237,23 @@ update (dataset = [], fields = {}, keyQLQuery = [], keyQLLimit = {offset: 0, cou
 - **`keyQLLimit`** is an `object` containing the `offset` and `count` of records to return
 - **`mapFunction`** gives us information on how to query each object in a dataset, see above
 
-## That's it!
+# Comparison to GraphQL
+
+KeyQL is not meant to act as a stand-in or replacement for GraphQL. You can
+think of it more like a lightweight cousin: a midpoint between the wild-west of
+loosely opinionated SOAP and REST requests and the highly-structured, opinionated
+and complex world of GraphQL.
+
+Whereas GraphQL provides an interface and opinions around manipulating large,
+graph-structured datasets and can define an entire backend architecture,
+KeyQL takes a more minimalistic and piecemeal approach -- providing a simple
+structure for writing queries using JSON.
+
+# Acknowledgements
 
 Thanks for checking out KeyQL. There's a lot more to come as the API is improved.
 
-### Roadmap
+## Roadmap
 
 - **(High Priority)** Support type coercion of `entryValue` and `queryValue`
 - **(High Priority)** Query immutability (return subsets of a dataset)
