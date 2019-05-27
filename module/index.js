@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 class KeyQL  {
 
   select (dataset = [], keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
@@ -9,6 +11,14 @@ class KeyQL  {
       .slice(limit.offset, limit.count ? limit.offset + limit.count : dataset.length);
   }
 
+  update (dataset = [], fields = {}, keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
+    fields = this.validateFields(fields);
+    let transform = this.validateMapFunction(mapFunction);
+    let result = this.select(dataset, keyQLQuery, keyQLLimit, mapFunction);
+    result.forEach(data => this.updateItem(fields, transform(data)));
+    return result;
+  }
+
   queryItem (keyQLQuery, item) {
     for (let i = 0; i < keyQLQuery.length; i++) {
       if (this.matchQueryEntry(keyQLQuery[i], item)) {
@@ -16,6 +26,11 @@ class KeyQL  {
       }
     }
     return false;
+  }
+
+  updateItem (fields, item) {
+    Object.keys(fields).forEach(key => item[key] = fields[key]);
+    return item;
   }
 
   matchQueryEntry (keyQLQueryEntry, item) {
@@ -32,6 +47,13 @@ class KeyQL  {
       }
     }
     return true;
+  }
+
+  validateFields (fields) {
+    if (!fields || typeof fields !== 'object' || Array.isArray(fields)) {
+      throw new Error('fields must be a valid object');
+    }
+    return fields;
   }
 
   validateQuery (keyQLQuery) {
@@ -124,7 +146,25 @@ KeyQL.OPERATORS = {
   'not_true': (a, b) => a !== true,
   'not_false': (a, b) => a !== false,
   'in': (a, b) => b.indexOf(a) > -1,
-  'not_in': (a, b) => b.indexOf(a) === -1
+  'not_in': (a, b) => b.indexOf(a) === -1,
+  'is_recent': (a, b) => {
+    let delta;
+    try {
+      delta = moment.now() - moment.parseZone(a).valueOf();
+    } catch (e) {
+      delta = NaN;
+    }
+    return delta >= 0 && delta <= (b * 1000);
+  },
+  'is_upcoming': (a, b) => {
+    let delta;
+    try {
+      delta = new moment.parseZone(a).valueOf() - moment.now();
+    } catch (e) {
+      delta = NaN;
+    }
+    return delta > 0 && delta <= (b * 1000);
+  }
 };
 
 module.exports = new KeyQL();

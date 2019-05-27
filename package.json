@@ -1,6 +1,6 @@
 {
   "name": "keyql",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A language for querying datasets using key-value pairs",
   "main": "module/index.js",
   "scripts": {
@@ -11,5 +11,8 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^6.1.4"
+  },
+  "dependencies": {
+    "moment": "^2.24.0"
   }
 }

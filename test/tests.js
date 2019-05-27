@@ -1,6 +1,7 @@
 const KeyQL = require('../module/index.js');
 const expect = require('chai').expect;
 const datasets = require('./datasets.json');
+const moment = require('moment');
 
 describe('KeyQL Setup Tests', () => {
 
@@ -315,6 +316,198 @@ describe('KeyQL Operator Tests', () => {
     expect(rows[1].first_name).to.not.be.oneOf(['Arya', 'Jon']);
     expect(rows[2].first_name).to.not.be.oneOf(['Arya', 'Jon']);
     expect(rows[3].first_name).to.not.be.oneOf(['Arya', 'Jon']);
+
+  });
+
+  it('Should select query with "is_recent" operator', () => {
+
+    let hours = [4, 3, 2, 1, 0];
+    let datestrings = hours.map(h => {
+      return moment.utc(moment.now() - (h * 60 * 60 * 1000))
+        .format('MM/DD/YYYY HH:mm:ss', 'UTC');
+    });
+    let dataset = datestrings.map((ds, i) => {
+      return {
+        index: i,
+        date: ds
+      };
+    });
+
+    let rows = KeyQL.select(dataset, [{date__is_recent: 2 * 60 * 60}]);
+    expect(rows.length).to.equal(2);
+    expect(rows[0].index).to.equal(3);
+    expect(rows[1].index).to.equal(4);
+
+  });
+
+  it('Should select query with "is_upcoming" operator', () => {
+
+    let hours = [4, 3, 2, 1, 0];
+    let datestrings = hours.map(h => {
+      return moment.utc(moment.now() + (h * 60 * 60 * 1000))
+        .format('MM/DD/YYYY HH:mm:ss', 'UTC');
+    });
+    let dataset = datestrings.map((ds, i) => {
+      return {
+        index: i,
+        date: ds
+      };
+    });
+
+    let rows = KeyQL.select(dataset, [{date__is_upcoming: 2 * 60 * 60}]);
+    expect(rows.length).to.equal(2);
+    expect(rows[0].index).to.equal(2);
+    expect(rows[1].index).to.equal(3);
+
+  });
+
+});
+
+describe('KeyQL Map Tests', () => {
+
+  it('Should map to an internal fieldset properly', () => {
+
+    let rows = KeyQL.select(datasets.spreadsheet, [{name: 'Isabelle'}], {}, v => v.fields);
+    expect(rows.length).to.equal(1);
+    expect(rows[0].fields).to.exist;
+    expect(rows[0].fields.name).to.equal('Isabelle');
+
+  });
+
+  it('Should map to an internal fieldset and execute OR properly', () => {
+
+    let rows = KeyQL.select(datasets.spreadsheet, [{name: 'Isabelle'}, {name: 'Frank'}], {}, v => v.fields);
+    expect(rows.length).to.equal(2);
+    expect(rows[0].fields).to.exist;
+    expect(rows[0].fields.name).to.equal('Frank');
+    expect(rows[1].fields).to.exist;
+    expect(rows[1].fields.name).to.equal('Isabelle');
+
+  });
+
+});
+
+describe('KeyQL Limit Tests', () => {
+
+  it('Should run a select query without a limit set', () => {
+
+    let rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {}, v => v.fields);
+    expect(rows.length).to.equal(3);
+    expect(rows[0].fields.pets).to.equal("0");
+    expect(rows[1].fields.pets).to.equal("0");
+    expect(rows[2].fields.pets).to.equal("0");
+    expect(rows[0].id).to.equal(3);
+    expect(rows[1].id).to.equal(8);
+    expect(rows[2].id).to.equal(9);
+
+  });
+
+  it('Should run a select query with a limit offset', () => {
+
+    let rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {offset: 1}, v => v.fields);
+    expect(rows.length).to.equal(2);
+    expect(rows[0].fields.pets).to.equal("0");
+    expect(rows[1].fields.pets).to.equal("0");
+    expect(rows[0].id).to.equal(8);
+    expect(rows[1].id).to.equal(9);
+
+  });
+
+  it('Should run a select query with a limit count', () => {
+
+    let rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {count: 1}, v => v.fields);
+    expect(rows.length).to.equal(1);
+    expect(rows[0].fields.pets).to.equal("0");
+    expect(rows[0].id).to.equal(3);
+
+  });
+
+  it('Should run a select query with a limit offset and count', () => {
+
+    let rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {offset: 1, count: 1}, v => v.fields);
+    expect(rows.length).to.equal(1);
+    expect(rows[0].fields.pets).to.equal("0");
+    expect(rows[0].id).to.equal(8);
+
+  });
+
+  it ('Should throw an error with a negative limit offset', () => {
+    let rows, error;
+    try {
+      rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {offset: -1}, v => v.fields);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+  });
+
+  it ('Should throw an error with an invalid limit offset', () => {
+    let rows, error;
+    try {
+      rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {offset: 'LOL'}, v => v.fields);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+  });
+
+  it ('Should throw an error with a float limit offset', () => {
+    let rows, error;
+    try {
+      rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {offset: 2.2}, v => v.fields);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+  });
+
+  it ('Should throw an error with a negative limit count', () => {
+    let rows, error;
+    try {
+      rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {count: -1}, v => v.fields);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+  });
+
+  it ('Should throw an error with an invalid limit count', () => {
+    let rows, error;
+    try {
+      rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {count: 'LOL'}, v => v.fields);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+  });
+
+  it ('Should throw an error with a float limit count', () => {
+    let rows, error;
+    try {
+      rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {count: 2.2}, v => v.fields);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+  });
+
+});
+
+describe('KeyQL Update Tests', () => {
+
+  it('Should run an update query', () => {
+
+    let rows = KeyQL.update(datasets.spreadsheet, {pets: null}, [{pets: "0"}], {}, v => v.fields);
+    expect(rows.length).to.equal(3);
+    expect(rows[0].fields.pets).to.equal(null);
+    expect(rows[1].fields.pets).to.equal(null);
+    expect(rows[2].fields.pets).to.equal(null);
+    expect(rows[0].id).to.equal(3);
+    expect(rows[1].id).to.equal(8);
+    expect(rows[2].id).to.equal(9);
+
+    rows = KeyQL.select(datasets.spreadsheet, [{pets: "0"}], {}, v => v.fields);
+    expect(rows.length).to.equal(0);
 
   });
 
