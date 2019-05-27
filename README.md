@@ -16,8 +16,7 @@ user dataset for **every username that contains `"ke"`** in a case-insensitive
 fashion.
 
 ```
-HTTP POST
-https://$user.api.stdlib.com/project@dev/users/select
+HTTP POST https://$user.api.stdlib.com/project@dev/users/select
 {
   "query": {
     "username__icontains": "ke"
@@ -26,10 +25,16 @@ https://$user.api.stdlib.com/project@dev/users/select
 ```
 
 With the intended response being something like:
-```
+```json
 [
-  {username: 'Kelly', profile_image: 'boop.jpg'},
-  {username: 'Kevin', profile_image: 'snoot.jpg'}
+  {
+    "username": "Kelly",
+    "profile_image": "boop.jpg"
+  },
+  {
+    "username": "Kevin",
+    "profile_image": "snoot.jpg"
+  }
 ]
 ```
 
@@ -56,8 +61,103 @@ of web projects, primarily working with JSON and SQL queries. It's the culminati
 of best practices learned implementing [DataCollection.js](https://github.com/keithwhor/DataCollection.js) and
 [Nodal](https://github.com/keithwhor/nodal)'s ORM.
 
-*This README will be updated shortly with a structured description and breakdown
-of KeyQL queries.*
+### Writing Queries
+
+Writing KeyQL Queries is as simple as preparing a JSON Object. For example,
+in a dataset that has records that look like...
+
+```javascript
+// Example dataset in JavaScript
+[
+  {
+    first_name: 'Dolores',
+    last_name: 'Abernathy',
+    is_host: true,
+    eye_color: 'blue',
+    hair_color: 'blonde',
+    location_in_park: null,
+    age: 250
+  }
+]
+```
+
+You could write a query against it that returns...
+
+#### Query: All entries with `first_name` = `Dolores`
+
+```json
+[
+  {
+    "first_name": "Dolores"
+  }
+]
+```
+
+#### Query: `first_name` = `Dolores` AND `eye_color` in `blue`, `green`
+
+```json
+[
+  {
+    "first_name": "Dolores",
+    "eye_color__in": ["blue", "green"]
+  }
+]
+```
+
+#### Query: `first_name` = `Dolores` OR `first_name` = `Teddy`
+
+```json
+[
+  {
+    "first_name": "Dolores"
+  },
+  {
+    "first_name": "Teddy"
+  }
+]
+```
+
+### Supported Operators
+
+All operators in KeySQL queries are preceded by a `__` delimiter. To reiterate
+from the previous section, this means you can query the field `first_name` with;
+
+```javascript
+"first_name" // (default to "is" operator)
+"first_name__is"
+"first_name__startswith"
+"first_name__gte"
+```
+
+#### Full List of Supported Operators
+
+The following table assumes that `queryValue` is the value you're searching for
+provided a specified key, and `entryValue` is the matching entry in a dataset.
+
+| Operator | Behavior |
+| -------- | -------- |
+| is | Finds all matching entries. Returns `entryValue === queryValue` (exact match, type included). |
+| not | Finds all non-matching entries. Returns `entryValue !== queryValue` (exact match, type included). |
+| gt | Finds all entries **greater than** specified value. Returns `entryValue > queryValue`. |
+| gte | Finds all entries **greater than or equal to** specified value. Returns `entryValue >= queryValue`. |
+| lt | Finds all entries **less than** specified value. Returns `entryValue < queryValue`. |
+| lte | Finds all entries **less than or equal to** specified value. Returns `entryValue < queryValue`. |
+| contains | Finds all entries **containing** the **exact** provided value. Works when `entryValue` is a `string` or an `array`. |
+| icontains | Finds all entries **containing** the provided value, **case-insensitive**. Works when `entryValue` is a `string` or an `array`. |
+| startswith | Finds all entries **starting with** the **exact** provided value. Works when `entryValue` is a `string`.
+| istartswith | Finds all entries **starting with** the provided value, **case-insensitive**. Works when `entryValue` is a `string`. |
+| endswith | Finds all entries **ending with** the **exact** provided value. Works when `entryValue` is a `string`. |
+| iendswith | Finds all entries **ending with** the provided value, **case-insensitive**. Works when `entryValue` is a `string`. |
+| is_null | Finds all entries where `entryValue === null`, **`queryValue` is ignored**. |
+| is_true | Finds all entries where `entryValue === true`, **`queryValue` is ignored**. |
+| is_false | Finds all entries where `entryValue === false`, **`queryValue` is ignored**. |
+| not_null | Finds all entries where `entryValue !== null`, **`queryValue` is ignored**. |
+| not_true | Finds all entries where `entryValue !== true`, **`queryValue` is ignored**. |
+| not_false | Finds all entries where `entryValue !== false`, **`queryValue` is ignored**. |
+| in | Finds all entries **within** the provided value, intended to match when `queryValue` is an `array` but works with `string` input. |
+| not_in | Finds all entries **not in** the provided value, intended to match when `queryValue` is an `array` but works with `string` input. |
+| is_recent | Finds all entries where `DATE(entryValue)` is within the last `queryValue` in number of seconds. i.e. `"field__is_recent": 3600` would look for entries that have `field` as a date/timestamp that has happened in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
+| is_upcoming | Finds all entries where `DATE(entryValue)` is going to occur within the next `queryValue` in number of seconds. i.e. `"field__is_upcoming": 3600` would look for entries that have `field` as a date/timestamp that is going to happen in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
 
 ## Installation and Usage
 
@@ -67,8 +167,82 @@ be used to automatically filter JSON datasets (arrays of objects) based on a spe
 query. In the future, we intend to migrate the [Nodal](https://github.com/keithwhor/nodal) Query Composer (ORM)
 to be able to automatically generate SQL queries from a provided KeyQL statement.
 
-*This README will be updated shortly with usage examples*
+You can install the package simply using [Node.js](https://nodejs.org) (10 or higher) and NPM:
 
-## Acknowledgements
+```shell
+$ npm i keyql --save
+```
+
+And use it in your Node.js project with:
+
+```javascript
+const KeyQL = require('keyql');
+```
+
+### Methods
+
+As of right now, KeyQL supports two methods when querying native JavaScript datasets:
+`select()` and `update()`:
+
+#### KeyQL.select
+
+```
+select (dataset = [], keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v)
+```
+
+- **`dataset`** is an `array` of objects you wish to parse through
+- **`keyQLQuery`** is an `array` of `objects` intended to be used as the query
+- **`keyQLLimit`** is an `object` containing the `offset` and `count` of records to return
+- **`mapFunction`** gives us information on how to query each object in a dataset
+
+By default, **`mapFunction`** is a no-op. This works when your dataset looks like:
+
+```json
+[
+  {"id": 1, "name": "Jane", "age": 27},
+  {"id": 2, "name": "Stewart", "age": 43}
+]
+```
+
+However, your dataset may not be this straightforward. Some APIs return nested field
+values. For example, in the case of something like:
+
+```json
+[
+  {
+    "id": 1,
+    "fields": {"name": "Jane", "age": 27}
+  },
+  {
+    "id": 2,
+    "fields": {"name": "Stewart", "age": 43}
+  }
+]
+```
+
+We would provide the **`mapFunction`** as `v => v.fields` instead.
+
+#### KeyQL.update
+
+```
+update (dataset = [], fields = {}, keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
+```
+
+- **`dataset`** is an `array` of objects you wish to parse through
+- **`fields`** is an `object` containing key-value pairs you wish to update for match entries
+- **`keyQLQuery`** is an `array` of `objects` intended to be used as the query
+- **`keyQLLimit`** is an `object` containing the `offset` and `count` of records to return
+- **`mapFunction`** gives us information on how to query each object in a dataset, see above
+
+## That's it!
+
+Thanks for checking out KeyQL. There's a lot more to come as the API is improved.
+
+### Roadmap
+
+- **(High Priority)** Support type coercion of `entryValue` and `queryValue`
+- **(High Priority)** Query immutability (return subsets of a dataset)
+- **(Medium Priority)** Change tracking for update queries
+- **(Low Priority)** PostgreSQL Support (re: [Nodal](https://github.com/keithwhor/nodal))
 
 KeyQL is (c) 2019 Polybit Inc.

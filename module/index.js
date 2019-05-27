@@ -1,6 +1,3 @@
-const moment = require('moment');
-moment.suppressDeprecationWarnings = true;
-
 class KeyQL  {
 
   select (dataset = [], keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
@@ -66,7 +63,7 @@ class KeyQL  {
     }
     let keys = Object.keys(keyQLQueryObject);
     return keys.map(key => {
-      let blocks = key.split(KeyQL.DELIMETER);
+      let blocks = key.split(KeyQL.DELIMITER);
       blocks.length === 1 && blocks.push(KeyQL.DEFAULT_OPERATOR);
       let operator = blocks.pop();
       let compare = KeyQL.OPERATORS[operator];
@@ -118,50 +115,8 @@ class KeyQL  {
 
 }
 
-KeyQL.DELIMETER = '__';
+KeyQL.DELIMITER = '__';
 KeyQL.DEFAULT_OPERATOR = 'is';
-
-KeyQL.OPERATORS = {
-  'is': (a, b) => a === b,
-  'not': (a, b) => a !== b,
-  'gt': (a, b) => a > b,
-  'lt': (a, b) => a < b,
-  'gte': (a, b) => a >= b,
-  'lte': (a, b) => a <= b,
-  'icontains': (a, b) => a.toLowerCase().indexOf(b.toLowerCase()) > -1,
-  'contains': (a, b) => a.indexOf(b) > -1,
-  'startswith': (a, b) => a.startsWith(b),
-  'istartswith': (a, b) => a.toLowerCase().startsWith(b.toLowerCase()),
-  'endswith': (a, b) => a.endsWith(b),
-  'iendswith': (a, b) => a.toLowerCase().endsWith(b.toLowerCase()),
-  // 'like': (a, b) => a === b, // TODO: Implement basic LIKE operator
-  // 'ilike': (a, b) => a.toLowerCase() === b.toLowerCase(), // TODO: Implement basic LIKE operator
-  'is_null': (a, b) => a === null,
-  'is_true': (a, b) => a === true,
-  'is_false': (a, b) => a === false,
-  'not_null': (a, b) => a !== null,
-  'not_true': (a, b) => a !== true,
-  'not_false': (a, b) => a !== false,
-  'in': (a, b) => b.indexOf(a) > -1,
-  'not_in': (a, b) => b.indexOf(a) === -1,
-  'is_recent': (a, b) => {
-    let delta;
-    try {
-      delta = moment.now() - moment.parseZone(a).valueOf();
-    } catch (e) {
-      delta = NaN;
-    }
-    return delta >= 0 && delta <= (b * 1000);
-  },
-  'is_upcoming': (a, b) => {
-    let delta;
-    try {
-      delta = moment.parseZone(a).valueOf() - moment.now();
-    } catch (e) {
-      delta = NaN;
-    }
-    return delta > 0 && delta <= (b * 1000);
-  }
-};
+KeyQL.OPERATORS = require('./operators.js');
 
 module.exports = new KeyQL();
