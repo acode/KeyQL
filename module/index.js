@@ -38,11 +38,7 @@ class KeyQL  {
     for (let i = 0; i < keyQLQueryEntry.length; i++) {
       let statement = keyQLQueryEntry[i];
       let result;
-      try {
-        result = statement.compare(item[statement.key], statement.value)
-      } catch (e) {
-        throw new Error(`Could not compare values. Please make sure your mapFunction is returning a valid object.`);
-      }
+      result = statement.compare(item[statement.key], statement.value)
       if (!result) {
         return false;
       }
