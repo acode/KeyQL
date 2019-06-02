@@ -9,6 +9,21 @@ purpose of KeyQL is to be used with [FunctionScript](https://github.com/Function
 APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
 query requests to underlying datasets.
 
+The motivation for KeyQL differs from that of GraphQL. They can, in theory,
+coexist within a single codebase or API implementation. It is not intended to
+be used to define an entire backend architecture and provides no opinions on
+the graph-based structure of output data. It simply provides a lightweight query
+language around many types of datasets loosely based on the query implementation
+in [Django](https://djangoproject.com)'s ORM. It's meant for easy quering of
+in-memory JSON datsets, spreadsheet data, information retrieved from APIs such
+as [Airtable](https://airtable.com) and more. In this way, it can add
+robust querying capability to existing imperative APIs without a massive
+architectural lift and shift.
+
+KeyQL and GraphQL are not in conflict at all, and they (in theory) can coexist.
+KeyQL provides no opinions about the graph structure of the data being queried,
+it only defines how to query the data based on specific parameters.
+
 # Quick Example
 
 A quick example of using KeyQL with a [FunctionScript](https://github.com/FunctionScript/FunctionScript)
@@ -456,7 +471,7 @@ Executes a query and returns a subset of your primary `dataset` based
 on previous `KeyQLQueryCommand`s in the chain.
 
 ```
-values () {
+values ()
 ```
 
 Will return an `array` of `objects` from your primary `dataset`.
@@ -468,7 +483,7 @@ on previous `KeyQLQueryCommand`s in the chain. Updates all values with the field
 provided.
 
 ```
-update (fields = {}) {
+update (fields = {})
 ```
 
 - **`fields`** is an `object` containing key-value pairs you wish to update for match entries
