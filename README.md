@@ -10,14 +10,16 @@ APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
 query requests to underlying datasets.
 
 The motivation for KeyQL differs from that of GraphQL. They can, in theory,
-coexist within a single codebase or API implementation. It is not intended to
+coexist within a single codebase or API implementation. KeyQL is not intended to
 be used to define an entire backend architecture and provides no opinions on
 the graph-based structure of output data (you do not define schemas with it).
-It simply provides a lightweight query language around many types of datasets
-loosely based on the query implementation in [Django](https://djangoproject.com)'s
-ORM. It's meant for easy quering of in-memory JSON datsets, spreadsheet data,
+It simply provides a lightweight query language around many types of datasets, and
+is loosely based on the query implementation in [Django](https://djangoproject.com)'s
+ORM.
+
+KeyQL is meant for easy querying of in-memory JSON datsets, spreadsheet data,
 information retrieved from APIs such as [Airtable](https://airtable.com) and
-more. In this way, it can add robust querying capability to existing APIs
+more. It can be used to add robust querying capabilities to existing APIs
 without a massive architectural lift and shift.
 
 # Quick Example
