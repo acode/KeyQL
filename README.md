@@ -12,17 +12,13 @@ query requests to underlying datasets.
 The motivation for KeyQL differs from that of GraphQL. They can, in theory,
 coexist within a single codebase or API implementation. It is not intended to
 be used to define an entire backend architecture and provides no opinions on
-the graph-based structure of output data. It simply provides a lightweight query
-language around many types of datasets loosely based on the query implementation
-in [Django](https://djangoproject.com)'s ORM. It's meant for easy quering of
-in-memory JSON datsets, spreadsheet data, information retrieved from APIs such
-as [Airtable](https://airtable.com) and more. In this way, it can add
-robust querying capability to existing imperative APIs without a massive
-architectural lift and shift.
-
-KeyQL and GraphQL are not in conflict at all, and they (in theory) can coexist.
-KeyQL provides no opinions about the graph structure of the data being queried,
-it only defines how to query the data based on specific parameters.
+the graph-based structure of output data (you do not define schemas with it).
+It simply provides a lightweight query language around many types of datasets
+loosely based on the query implementation in [Django](https://djangoproject.com)'s
+ORM. It's meant for easy quering of in-memory JSON datsets, spreadsheet data,
+information retrieved from APIs such as [Airtable](https://airtable.com) and
+more. In this way, it can add robust querying capability to existing APIs
+without a massive architectural lift and shift.
 
 # Quick Example
 
@@ -257,7 +253,7 @@ provided a specified key, and `entryValue` is the matching entry in a dataset.
 | in | Finds all entries **within** the provided value, intended to match when `queryValue` is an `array` but works with `string` input. |
 | not_in | Finds all entries **not in** the provided value, intended to match when `queryValue` is an `array` but works with `string` input. |
 | recency_lt | Finds all entries where `DATE(entryValue)` is recent within less than `queryValue` in number of seconds. i.e. `"field__is_recent": 3600` would look for entries that have `field` as a date/timestamp that has happened in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
-| recency_lt | Finds all entries where `DATE(entryValue)` is recent within less than or equal to `queryValue` in number of seconds. i.e. `"field__is_recent": 3600` would look for entries that have `field` as a date/timestamp that has happened in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
+| recency_lte | Finds all entries where `DATE(entryValue)` is recent within less than or equal to `queryValue` in number of seconds. i.e. `"field__is_recent": 3600` would look for entries that have `field` as a date/timestamp that has happened in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
 | recency_gt | Finds all entries where `DATE(entryValue)` has a recency greater than `queryValue` in number of seconds. i.e. `"field__is_recent": 3600` would look for entries that have `field` as a date/timestamp that has happened in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
 | recency_gte | Finds all entries where `DATE(entryValue)` has a recency greater than or equal to `queryValue` in number of seconds. i.e. `"field__is_recent": 3600` would look for entries that have `field` as a date/timestamp that has happened in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
 | upcoming_lt | Finds all entries where `DATE(entryValue)` is going to occur within less than `queryValue` in number of seconds. i.e. `"field__is_upcoming": 3600` would look for entries that have `field` as a date/timestamp that is going to happen in the past hour. ISO8601 Timestamps suggested, if no timezone entered UTC will be assumed. |
