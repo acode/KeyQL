@@ -1,0 +1,21 @@
+// TODO: Unused
+module.exports = {
+  'is_null': {value: true},
+  'is_true': {value: true},
+  'is_false': {value: true},
+  'not_null': {value: true},
+  'not_true': {value: true},
+  'not_false': {value: true},
+  'recency_lt': 'integer.seconds',
+  'recency_lte': 'integer.seconds',
+  'recency_gt': 'integer.seconds',
+  'recency_gte': 'integer.seconds',
+  'upcoming_lt': 'integer.seconds',
+  'upcoming_lte': 'integer.seconds',
+  'upcoming_gt': 'integer.seconds',
+  'upcoming_gte': 'integer.seconds',
+  'date_lt': 'string.date',
+  'date_lte': 'string.date',
+  'date_gt': 'string.date',
+  'date_gte': 'string.date',
+};

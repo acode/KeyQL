@@ -142,6 +142,15 @@ describe('KeyQL Operator Tests', () => {
 
   });
 
+  it('Should select query with "is" operator', () => {
+
+    let rows = GOT.query().select([{last_name__is: 'Snow'}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].last_name).to.equal('Snow');
+    expect(rows[1].last_name).to.equal('Snow');
+
+  });
+
   it('Should select query with "not" operator', () => {
 
     let rows = GOT.query().select([{last_name__not: 'Snow'}]).values();

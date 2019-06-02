@@ -9,6 +9,87 @@ purpose of KeyQL is to be used with [FunctionScript](https://github.com/Function
 APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
 query requests to underlying datasets.
 
+# Quick Example
+
+A quick example of using KeyQL with a [FunctionScript](https://github.com/FunctionScript/FunctionScript)
+API would look like:
+
+`/dataset.json`
+```json
+[
+  {
+    "id": 1,
+    "fields": {
+      "name": "Alice",
+      "birthdate": "12/01/1988",
+      "pets": 2
+    }
+  },
+  {
+    "id": 2,
+    "fields": {
+      "name": "Bernard",
+      "birthdate": "11/11/1972",
+      "pets": 5
+    }
+  },
+  {
+    "id": 3,
+    "fields": {
+      "name": "Christine",
+      "birthdate": "01/05/1991",
+      "pets": 0
+    }
+  }
+]
+```
+
+`functions/__main__.js`
+```javascript
+const KeyQL = require('keyql');
+const dataset = require('../dataset.json');
+// Searching through the "fields" object in each row
+const kqlDataset = new KeyQL(dataset, row => row.fields);
+
+/**
+* Query a dataset based on an Array of Objects
+* @param {object} where A list of fields to query for
+* @returns {array} result The result list
+*/
+module.exports = async (where = {}) => {
+
+  return kqlDataset.query()
+    .select([where]) // Wrap in array if provided a raw object
+    .values();
+
+};
+```
+
+An HTTP POST request containing:
+
+```json
+{
+  "where": {
+    "pets__gt": 3
+  }
+}
+```
+
+Would return:
+
+```json
+[
+  {
+    "id": 2,
+    "fields": {
+      "name": "Bernard",
+      "birthdate": "11/11/1972",
+      "pets": 5
+    }
+  }
+]
+```
+
 # Table of Contents
 
 1. [Introduction](#introduction)
@@ -191,22 +272,90 @@ And use it in your Node.js project with:
 
 ```javascript
 const KeyQL = require('keyql');
+
+let dataset = [/* my dataset */]; // Your array of objects
+
+const myDataset = new KeyQL(dataset);
+myDataset.query()
+  .select({value__gte: 5})
+  .values(); // gets all records where "value" is > 5
 ```
 
-## Methods
+## Node.js Examples
 
-As of right now, KeyQL supports two methods when querying native JavaScript datasets:
-`select()` and `update()`:
+```javascript
+const KeyQL = require('keyql');
 
-### KeyQL.select
+const kqlDataset = new KeyQL(
+  [
+    {
+      "id": 1,
+      "fields": {
+        "name": "Alice",
+        "birthdate": "12/01/1988",
+        "pets": 2
+      }
+    },
+    {
+      "id": 2,
+      "fields": {
+        "name": "Bernard",
+        "birthdate": "11/11/1972",
+        "pets": 5
+      }
+    },
+    {
+      "id": 3,
+      "fields": {
+        "name": "Christine",
+        "birthdate": "01/05/1991",
+        "pets": 0
+      }
+    }
+  ],
+  row => row.fields // mapping
+);
+
+// Basic query
+kqlDataset.query()
+  .select([{pets__gt: 3}])
+  .values(); // gives Bernard
+
+// OR query is adding additional array elements
+kqlDataset.query()
+  .select([{pets__gt: 3}, {pets__lt: 2}])
+  .values(); // gives Bernard, Christine
+
+// AND query is additional parameters in a single object
+kqlDataset.query()
+  .select([{name__in: ['Bernard', 'Christine'], pets: 5}])
+  .values(); // gives Bernard
+
+// Chaining will continue to filter datasets
+kqlDataset.query()
+  .select([{name__in: ['Bernard', 'Christine']}])
+  .select([{pets__lt: 5})
+  .values(); // gives Christine
+
+// Updating can modify the base dataset
+kql.query()
+  .select([{birthdate__date_gt: '01-01-1980'}])
+  .update({pets: 100}); // Sets Alice and Christine to have 100 pets
+```
+
+## KeyQL
+
+The main KeyQL constructor. Used to wrap datasets to be able to query them.
+
+### KeyQL#constructor
 
 ```
-select (dataset = [], keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v)
+constructor (dataset = [], mapFunction = v => v)
 ```
+
+Initializes a KeyQL Dataset
 
 - **`dataset`** is an `array` of objects you wish to parse through
-- **`keyQLQuery`** is an `array` of `objects` intended to be used as the query
-- **`keyQLLimit`** is an `object` containing the `offset` and `count` of records to return
 - **`mapFunction`** gives us information on how to query each object in a dataset
 
 By default, **`mapFunction`** is a no-op. This works when your dataset looks like:
@@ -236,17 +385,95 @@ values. For example, in the case of something like:
 
 We would provide the **`mapFunction`** as `v => v.fields` instead.
 
-### KeyQL.update
+### KeyQL#keys
 
 ```
-update (dataset = [], fields = {}, keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
+keys ()
 ```
 
-- **`dataset`** is an `array` of objects you wish to parse through
-- **`fields`** is an `object` containing key-value pairs you wish to update for match entries
+Returns the keys for the Dataset, extracted from the first object provided.
+
+### KeyQL#rows
+
+```
+rows ()
+```
+
+Returns all rows in the Dataset as initially provided.
+
+### KeyQL#query
+
+```
+query ()
+```
+
+Instantiates a `KeyQLQueryCommand` instance, which will create an immutable
+history of all query commands.
+
+## KeyQLQueryCommand
+
+Created from `KeyQL#query`, an immutable record of a query history. Can be
+chained indefinitely without overwriting previous `KeyQLQueryCommand` data.
+
+For example:
+
+```javascript
+let kqlDataset = new KeyQL([/* my dataset */]);
+
+let q1 = kqlDataset.query().select({first_name: 'Tim'});
+let q2 = q1.select({age__gt: 20});
+
+q1 === q2; // false
+q1.values(); // Everybody named "Tim"
+q2.values(); // Everybody named "Tim" with age > 20
+```
+
+### KeyQLQueryCommand#select
+
+Returns a new `KeyQLQueryCommand` instance with a `select` command added.
+Used to select values given a `KeyQLQuery`.
+
+```
+select (keyQLQuery = [])
+```
+
 - **`keyQLQuery`** is an `array` of `objects` intended to be used as the query
+
+### KeyQLQueryCommand#limit
+
+Returns a new `KeyQLQueryCommand` instance with a `limit` command added.
+Used to select values given a `KeyQLLimit`.
+
+```
+select (keyQLLimit = {offset: 0, count: 0})
+```
+
 - **`keyQLLimit`** is an `object` containing the `offset` and `count` of records to return
-- **`mapFunction`** gives us information on how to query each object in a dataset, see above
+
+### KeyQLQueryCommand#values
+
+Executes a query and returns a subset of your primary `dataset` based
+on previous `KeyQLQueryCommand`s in the chain.
+
+```
+values () {
+```
+
+Will return an `array` of `objects` from your primary `dataset`.
+
+### KeyQLQueryCommand#update
+
+Executes a query and returns a subset of your primary `dataset` based
+on previous `KeyQLQueryCommand`s in the chain. Updates all values with the fields
+provided.
+
+```
+update (fields = {}) {
+```
+
+- **`fields`** is an `object` containing key-value pairs you wish to update for match entries
+
+Will update and return an `array` of `objects` from your primary `dataset`.
 
 # Comparison to GraphQL
 
@@ -267,7 +494,6 @@ Thanks for checking out KeyQL. There's a lot more to come as the API is improved
 ## Roadmap
 
 - **(High Priority)** Support type coercion of `entryValue` and `queryValue`
-- **(High Priority)** Query immutability (return subsets of a dataset)
 - **(Medium Priority)** Change tracking for update queries
 - **(Low Priority)** PostgreSQL Support (re: [Nodal](https://github.com/keithwhor/nodal))
 

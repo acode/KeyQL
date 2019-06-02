@@ -1,4 +1,4 @@
-const KeyQLQueryCommand = require('./querycommand.js');
+const KeyQLQueryCommand = require('./query_command.js');
 
 class KeyQL  {
 
@@ -128,6 +128,6 @@ class KeyQL  {
 
 KeyQL.DELIMITER = '__';
 KeyQL.DEFAULT_OPERATOR = 'is';
-KeyQL.OPERATORS = require('./operators.js');
+KeyQL.OPERATORS = require('./operators/operators.js');
 
 module.exports = KeyQL;
