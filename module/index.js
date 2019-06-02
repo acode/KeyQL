@@ -1,46 +1,45 @@
+const KeyQLQueryCommand = require('./querycommand.js');
+
 class KeyQL  {
 
-  select (dataset = [], keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
-    let query = this.validateQuery(keyQLQuery);
-    let limit = this.validateLimit(keyQLLimit);
-    let transform = this.validateMapFunction(mapFunction);
+  constructor (dataset = [], mapFunction = v => v) {
+    this.dataset = this.validateDataset(dataset);
+    this.mapFunction = this.validateMapFunction(mapFunction);
+    this._keys = this.validateKeys(this.dataset, this.mapFunction);
+    this.initialize();
+  }
+
+  initialize () {
+    this._rows = this.validateRows(this.dataset, this.mapFunction, this._keys);
+  }
+
+  validateKeys (dataset, mapFunction) {
+    return dataset.length
+     ? Object.keys(mapFunction(dataset[0]))
+     : [];
+  }
+
+  validateRows (dataset, mapFunction, keys) {
     return dataset
-      .filter(data => this.queryItem(query, transform(data)))
-      .slice(limit.offset, limit.count ? limit.offset + limit.count : dataset.length);
+      .map((row, i) => {
+        row = mapFunction(row);
+        let refRow = Object.defineProperty(
+          Object.create(null),
+          '__keyqlid__',
+          {value: i}
+        );
+        return keys.reduce((refRow, key) => {
+          refRow[key] = row[key];
+          return refRow;
+        }, refRow);
+      });
   }
 
-  update (dataset = [], fields = {}, keyQLQuery = [], keyQLLimit = {offset: 0, count: 0}, mapFunction = v => v) {
-    fields = this.validateFields(fields);
-    let transform = this.validateMapFunction(mapFunction);
-    let result = this.select(dataset, keyQLQuery, keyQLLimit, mapFunction);
-    result.forEach(data => this.updateItem(fields, transform(data)));
-    return result;
-  }
-
-  queryItem (keyQLQuery, item) {
-    for (let i = 0; i < keyQLQuery.length; i++) {
-      if (this.matchQueryEntry(keyQLQuery[i], item)) {
-        return true;
-      }
+  validateDataset (dataset) {
+    if (!Array.isArray(dataset)) {
+      throw new Error('Dataset must be a valid array.');
     }
-    return false;
-  }
-
-  updateItem (fields, item) {
-    Object.keys(fields).forEach(key => item[key] = fields[key]);
-    return item;
-  }
-
-  matchQueryEntry (keyQLQueryEntry, item) {
-    for (let i = 0; i < keyQLQueryEntry.length; i++) {
-      let statement = keyQLQueryEntry[i];
-      let result;
-      result = statement.compare(item[statement.key], statement.value)
-      if (!result) {
-        return false;
-      }
-    }
-    return true;
+    return dataset;
   }
 
   validateFields (fields) {
@@ -113,10 +112,22 @@ class KeyQL  {
     return mapFunction;
   }
 
+  query () {
+    return new KeyQLQueryCommand(this);
+  }
+
+  keys () {
+    return this._keys.slice();
+  }
+
+  rows () {
+    return this._rows.slice();
+  }
+
 }
 
 KeyQL.DELIMITER = '__';
 KeyQL.DEFAULT_OPERATOR = 'is';
 KeyQL.OPERATORS = require('./operators.js');
 
-module.exports = new KeyQL();
+module.exports = KeyQL;
