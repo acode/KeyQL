@@ -333,7 +333,11 @@ describe('KeyQL Operator Tests', () => {
 
   });
 
-  it('Should select query with "is_recent" operator', () => {
+});
+
+describe('KeyQL Date Operator Tests', () => {
+
+  it('Should select query with "recency_lt", "recency_lte" operator', () => {
 
     let hours = [4, 3, 2, 1, 0];
     let datestrings = hours.map(h => {
@@ -347,14 +351,47 @@ describe('KeyQL Operator Tests', () => {
       };
     });
 
-    let rows = new KeyQL(dataset).query().select([{date__is_recent: 2 * 60 * 60}]).values();
+    let rows = new KeyQL(dataset).query().select([{date__recency_lt: 2 * 60 * 60}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].index).to.equal(3);
+    expect(rows[1].index).to.equal(4);
+
+    rows = new KeyQL(dataset).query().select([{date__recency_lte: 2 * 60 * 60}]).values();
     expect(rows.length).to.equal(2);
     expect(rows[0].index).to.equal(3);
     expect(rows[1].index).to.equal(4);
 
   });
 
-  it('Should select query with "is_upcoming" operator', () => {
+  it('Should select query with "recency_gt", "recency_gte" operator', () => {
+
+    let hours = [4, 3, 2, 1, 0];
+    let datestrings = hours.map(h => {
+      return moment.utc(moment.now() - (h * 60 * 60 * 1000))
+        .format('MM/DD/YYYY HH:mm:ss', 'UTC');
+    });
+    let dataset = datestrings.map((ds, i) => {
+      return {
+        index: i,
+        date: ds
+      };
+    });
+
+    let rows = new KeyQL(dataset).query().select([{date__recency_gt: 2 * 60 * 60}]).values();
+    expect(rows.length).to.equal(3);
+    expect(rows[0].index).to.equal(0);
+    expect(rows[1].index).to.equal(1);
+    expect(rows[2].index).to.equal(2);
+
+    rows = new KeyQL(dataset).query().select([{date__recency_gte: 2 * 60 * 60}]).values();
+    expect(rows.length).to.equal(3);
+    expect(rows[0].index).to.equal(0);
+    expect(rows[1].index).to.equal(1);
+    expect(rows[2].index).to.equal(2);
+
+  });
+
+  it('Should select query with "upcoming_lt", "upcoming_lte" operator', () => {
 
     let hours = [4, 3, 2, 1, 0];
     let datestrings = hours.map(h => {
@@ -368,10 +405,99 @@ describe('KeyQL Operator Tests', () => {
       };
     });
 
-    let rows = new KeyQL(dataset).query().select([{date__is_upcoming: 2 * 60 * 60}]).values();
+    let rows = new KeyQL(dataset).query().select([{date__upcoming_lt: 2 * 60 * 60}]).values();
     expect(rows.length).to.equal(2);
     expect(rows[0].index).to.equal(2);
     expect(rows[1].index).to.equal(3);
+
+    rows = new KeyQL(dataset).query().select([{date__upcoming_lte: 2 * 60 * 60}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].index).to.equal(2);
+    expect(rows[1].index).to.equal(3);
+
+  });
+
+  it('Should select query with "upcoming_gt", "upcoming_gte" operator', () => {
+
+    let hours = [4, 3, 2, 1, 0];
+    let datestrings = hours.map(h => {
+      return moment.utc(moment.now() + (h * 60 * 60 * 1000))
+        .format('MM/DD/YYYY HH:mm:ss', 'UTC');
+    });
+    let dataset = datestrings.map((ds, i) => {
+      return {
+        index: i,
+        date: ds
+      };
+    });
+
+    let rows = new KeyQL(dataset).query().select([{date__upcoming_gt: 2 * 60 * 60}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].index).to.equal(0);
+    expect(rows[1].index).to.equal(1);
+
+    rows = new KeyQL(dataset).query().select([{date__upcoming_gte: 2 * 60 * 60}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].index).to.equal(0);
+    expect(rows[1].index).to.equal(1);
+
+  });
+
+  it ('Should select query with "date_lt" operator', () => {
+
+    let dataset = [
+      {index: 0, date: '11/30/1987'},
+      {index: 1, date: '12/06/1988'},
+      {index: 2, date: '12/13/1989'}
+    ];
+
+    rows = new KeyQL(dataset).query().select([{date__lt: '12/06/1988'}]).values();
+    expect(rows.length).to.equal(1);
+    expect(rows[0].index).to.equal(0);
+
+  });
+
+  it ('Should select query with "date_lte" operator', () => {
+
+    let dataset = [
+      {index: 0, date: '11/30/1987'},
+      {index: 1, date: '12/06/1988'},
+      {index: 2, date: '12/13/1989'}
+    ];
+
+    rows = new KeyQL(dataset).query().select([{date__lte: '12/06/1988'}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].index).to.equal(0);
+    expect(rows[1].index).to.equal(1);
+
+  });
+
+  it ('Should select query with "date_gt" operator', () => {
+
+    let dataset = [
+      {index: 0, date: '11/30/1987'},
+      {index: 1, date: '12/06/1988'},
+      {index: 2, date: '12/13/1989'}
+    ];
+
+    rows = new KeyQL(dataset).query().select([{date__gt: '12/06/1988'}]).values();
+    expect(rows.length).to.equal(1);
+    expect(rows[0].index).to.equal(2);
+
+  });
+
+  it ('Should select query with "date_gte" operator', () => {
+
+    let dataset = [
+      {index: 0, date: '11/30/1987'},
+      {index: 1, date: '12/06/1988'},
+      {index: 2, date: '12/13/1989'}
+    ];
+
+    rows = new KeyQL(dataset).query().select([{date__gte: '12/06/1988'}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].index).to.equal(1);
+    expect(rows[1].index).to.equal(2);
 
   });
 
