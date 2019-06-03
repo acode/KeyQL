@@ -31,19 +31,16 @@ class KeyQLQueryCommand {
   }
 
   values () {
-    return this.__query__();
+    return this.__query__().map(row => this.keyQL._dataset[row.__keyqlid__]);
   }
 
   update (fields = {}) {
     fields = this.keyQL.validateFields(fields);
     let keys = Object.keys(fields);
-    let mapFunction = this.keyQL.mapFunction;
     let rows = this.__query__();
-    rows.forEach(row => {
-      keys.forEach(key => mapFunction(row)[key] = fields[key]);
-    });
-    this.keyQL.initialize(); // commit changes to dataset
-    return rows;
+    let values = rows.map(row => this.keyQL.__updateRow__(row.__keyqlid__, keys, fields));
+    this.keyQL.__initialize__(); // commit changes to dataset
+    return values;
   }
 
   __query__ () {
@@ -58,7 +55,7 @@ class KeyQLQueryCommand {
       let command = commands.pop();
       rows = this.__executeCommand__(rows, command);
     }
-    return rows.map(row => this.keyQL.dataset[row.__keyqlid__]);
+    return rows;
   }
 
   __executeCommand__ (rows, command) {

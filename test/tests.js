@@ -678,4 +678,34 @@ describe('KeyQL Update Tests', () => {
 
   });
 
+  it ('Should keep track of updated rows', () => {
+
+    let rows = SHEETS.changeset();
+    expect(rows.length).to.equal(3);
+    expect(rows[0].fields.pets).to.equal(null);
+    expect(rows[1].fields.pets).to.equal(null);
+    expect(rows[2].fields.pets).to.equal(null);
+    expect(rows[0].id).to.equal(3);
+    expect(rows[1].id).to.equal(8);
+    expect(rows[2].id).to.equal(9);
+
+  });
+
+  it ('Should commit updates to a cloned dataset', () => {
+
+    let COMMIT = SHEETS.commit();
+    let rows = SHEETS.changeset();
+    expect(rows.length).to.equal(3);
+
+    rows = COMMIT.changeset();
+    expect(rows.length).to.equal(0);
+
+    rows = COMMIT.query().select([{pets: "0"}]).values();
+    expect(rows.length).to.equal(0);
+
+    rows = COMMIT.query().select([{pets: null}]).values();
+    expect(rows.length).to.equal(3);
+
+  });
+
 });

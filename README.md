@@ -412,7 +412,34 @@ Returns the keys for the Dataset, extracted from the first object provided.
 rows ()
 ```
 
-Returns all rows in the Dataset as initially provided.
+Returns all rows in the Dataset as initially provided (**`mapFunction` applied**).
+
+### KeyQL#dataset
+
+```
+dataset ()
+```
+
+Returns all entries in the Dataset as initially provided (**no `mapFunction` applied**).
+
+### KeyQL#changeset
+
+```
+changeset ()
+```
+
+Returns all entries in the dataset that have been update as a result of `KeyQLQueryCommand#update`
+method calls. To create a copy of your dataset with all new changes committed
+(reset the updated rows tracker), use `KeyQL#commit`
+
+### KeyQL#commit
+
+```
+commit ()
+```
+
+Returns a copy of your KeyQL instance with the same dataset, but the changeset
+will have been reset.
 
 ### KeyQL#query
 
@@ -507,7 +534,6 @@ Thanks for checking out KeyQL. There's a lot more to come as the API is improved
 ## Roadmap
 
 - **(High Priority)** Support type coercion of `entryValue` and `queryValue`
-- **(Medium Priority)** Change tracking for update queries
 - **(Low Priority)** PostgreSQL Support (re: [Nodal](https://github.com/keithwhor/nodal))
 
 KeyQL is (c) 2019 Polybit Inc.

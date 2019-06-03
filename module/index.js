@@ -3,14 +3,37 @@ const KeyQLQueryCommand = require('./query_command.js');
 class KeyQL  {
 
   constructor (dataset = [], mapFunction = v => v) {
-    this.dataset = this.validateDataset(dataset);
-    this.mapFunction = this.validateMapFunction(mapFunction);
-    this._keys = this.validateKeys(this.dataset, this.mapFunction);
-    this.initialize();
+    this._dataset = this.validateDataset(dataset);
+    this._mapFunction = this.validateMapFunction(mapFunction);
+    this._keys = this.validateKeys(this._dataset, this._mapFunction);
+    this._updated = {};
+    this.__initialize__();
   }
 
-  initialize () {
-    this._rows = this.validateRows(this.dataset, this.mapFunction, this._keys);
+  __initialize__ () {
+    this._rows = this.validateRows(this._dataset, this._mapFunction, this._keys);
+  }
+
+  __updateRow__ (keyQLID = -1, keys, fields) {
+    let row = this._dataset[keyQLID];
+    if (!row) {
+      throw new Error(`Could not find row index: "${keyQLID}"`);
+    }
+    let mapped = this._mapFunction(row);
+    keys.forEach(key => mapped[key] = fields[key]);
+    this._updated[keyQLID] = true;
+    return row;
+  }
+
+  changeset () {
+    return Object.keys(this._updated)
+      .map(id => parseInt(id))
+      .sort()
+      .map(id => this._dataset[id]);
+  }
+
+  commit () {
+    return new KeyQL(this._dataset, this._mapFunction);
   }
 
   validateKeys (dataset, mapFunction) {
@@ -118,6 +141,10 @@ class KeyQL  {
 
   keys () {
     return this._keys.slice();
+  }
+
+  dataset () {
+    return this._dataset.slice();
   }
 
   rows () {
