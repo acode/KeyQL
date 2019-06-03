@@ -7,7 +7,7 @@ class KeyQLQueryCommand {
   }
 
   select (keyQLQuery = []) {
-    let query = this.keyQL.validateQuery(keyQLQuery);
+    let query = this.keyQL.constructor.validateQuery(keyQLQuery);
     return new this.constructor(
       this.keyQL,
       this,
@@ -19,7 +19,7 @@ class KeyQLQueryCommand {
   }
 
   limit (keyQLLimit = {offset: 0, count: 0}) {
-    let limit = this.keyQL.validateLimit(keyQLLimit);
+    let limit = this.keyQL.constructor.validateLimit(keyQLLimit);
     return new this.constructor(
       this.keyQL,
       this,
@@ -35,7 +35,7 @@ class KeyQLQueryCommand {
   }
 
   update (fields = {}) {
-    fields = this.keyQL.validateFields(fields);
+    fields = this.keyQL.constructor.validateFields(fields);
     let keys = Object.keys(fields);
     let rows = this.__query__();
     let values = rows.map(row => this.keyQL.__updateRow__(row.__keyqlid__, keys, fields));

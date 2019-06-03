@@ -2,47 +2,13 @@ const KeyQLQueryCommand = require('./query_command.js');
 
 class KeyQL  {
 
-  constructor (dataset = [], mapFunction = v => v) {
-    this._dataset = this.validateDataset(dataset);
-    this._mapFunction = this.validateMapFunction(mapFunction);
-    this._keys = this.validateKeys(this._dataset, this._mapFunction);
-    this._updated = {};
-    this.__initialize__();
-  }
-
-  __initialize__ () {
-    this._rows = this.validateRows(this._dataset, this._mapFunction, this._keys);
-  }
-
-  __updateRow__ (keyQLID = -1, keys, fields) {
-    let row = this._dataset[keyQLID];
-    if (!row) {
-      throw new Error(`Could not find row index: "${keyQLID}"`);
-    }
-    let mapped = this._mapFunction(row);
-    keys.forEach(key => mapped[key] = fields[key]);
-    this._updated[keyQLID] = true;
-    return row;
-  }
-
-  changeset () {
-    return Object.keys(this._updated)
-      .map(id => parseInt(id))
-      .sort()
-      .map(id => this._dataset[id]);
-  }
-
-  commit () {
-    return new KeyQL(this._dataset, this._mapFunction);
-  }
-
-  validateKeys (dataset, mapFunction) {
+  static validateKeys (dataset, mapFunction) {
     return dataset.length
      ? Object.keys(mapFunction(dataset[0]))
      : [];
   }
 
-  validateRows (dataset, mapFunction, keys) {
+  static validateRows (dataset, mapFunction, keys) {
     return dataset
       .map((row, i) => {
         row = mapFunction(row);
@@ -58,28 +24,28 @@ class KeyQL  {
       });
   }
 
-  validateDataset (dataset) {
+  static validateDataset (dataset) {
     if (!Array.isArray(dataset)) {
       throw new Error('Dataset must be a valid array.');
     }
     return dataset;
   }
 
-  validateFields (fields) {
+  static validateFields (fields) {
     if (!fields || typeof fields !== 'object' || Array.isArray(fields)) {
       throw new Error('fields must be a valid object');
     }
     return fields;
   }
 
-  validateQuery (keyQLQuery) {
+  static validateQuery (keyQLQuery) {
     if (!Array.isArray(keyQLQuery)) {
       throw new Error('KeyQL Query must be a valid array');
     }
     return keyQLQuery.map(keyQLQueryObject => this.validateQueryObject(keyQLQueryObject));
   }
 
-  validateQueryObject (keyQLQueryObject) {
+  static validateQueryObject (keyQLQueryObject) {
     if (!keyQLQueryObject || typeof keyQLQueryObject !== 'object') {
       throw new Error('KeyQL Query Object must be a valid object');
     }
@@ -100,7 +66,7 @@ class KeyQL  {
     });
   }
 
-  validateLimit (keyQLLimit) {
+  static validateLimit (keyQLLimit) {
     if (!keyQLLimit || typeof keyQLLimit !== 'object' || Array.isArray(keyQLLimit)) {
       throw new Error('KeyQL Limit object must be a valid object');
     }
@@ -128,11 +94,45 @@ class KeyQL  {
     return keyQLLimit;
   }
 
-  validateMapFunction (mapFunction) {
+  static validateMapFunction (mapFunction) {
     if (typeof mapFunction !== 'function') {
       throw new Error('KeyQL mapFunction must be a valid function');
     }
     return mapFunction;
+  }
+
+  constructor (dataset = [], mapFunction = v => v) {
+    this._dataset = this.constructor.validateDataset(dataset);
+    this._mapFunction = this.constructor.validateMapFunction(mapFunction);
+    this._keys = this.constructor.validateKeys(this._dataset, this._mapFunction);
+    this._updated = {};
+    this.__initialize__();
+  }
+
+  __initialize__ () {
+    this._rows = this.constructor.validateRows(this._dataset, this._mapFunction, this._keys);
+  }
+
+  __updateRow__ (keyQLID = -1, keys, fields) {
+    let row = this._dataset[keyQLID];
+    if (!row) {
+      throw new Error(`Could not find row index: "${keyQLID}"`);
+    }
+    let mapped = this._mapFunction(row);
+    keys.forEach(key => mapped[key] = fields[key]);
+    this._updated[keyQLID] = true;
+    return row;
+  }
+
+  changeset () {
+    return Object.keys(this._updated)
+      .map(id => parseInt(id))
+      .sort()
+      .map(id => this._dataset[id]);
+  }
+
+  commit () {
+    return new KeyQL(this._dataset, this._mapFunction);
   }
 
   query () {
