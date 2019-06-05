@@ -33,6 +33,8 @@ by using [Code on Standard Library](https://code.stdlib.com/?gist=1b9b61e12b8ae8
 
 https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=functions/keyql.js
 
+[![KeyQL Demo](/images/keyql-demo.gif)](https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=functions/keyql.js)
+
 # Quick Example
 
 A quick example of using KeyQL with a [FunctionScript](https://github.com/FunctionScript/FunctionScript)
