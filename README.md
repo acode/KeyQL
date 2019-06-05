@@ -22,6 +22,15 @@ information retrieved from APIs such as [Airtable](https://airtable.com) and
 more. It can be used to add robust querying capabilities to existing APIs
 without a massive architectural lift and shift.
 
+# Live Demo
+
+You can see KeyQL in action, live and as part of a FunctionScript API endpoint,
+using [Code on Standard Library](https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=functions/keyql.js) by using the following link:
+
+**Note:** *In order to use Code on Standard Library you must have a registered account on [stdlib.com](https://stdlib.com), available for free.*
+
+https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=functions/keyql.js
+
 # Quick Example
 
 A quick example of using KeyQL with a [FunctionScript](https://github.com/FunctionScript/FunctionScript)
@@ -66,7 +75,7 @@ const kqlDataset = new KeyQL(dataset, row => row.fields);
 
 /**
 * Query a dataset based on an Array of Objects
-* @param {object} where A list of fields to query for
+* @param {object.keyql.query} where A list of fields to query for
 * @returns {array} result The result list
 */
 module.exports = async (where = {}) => {
