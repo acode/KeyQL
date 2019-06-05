@@ -1,6 +1,6 @@
 # KeyQL
 
-![KeyQL Logo](/images/keyql-wordmark.png)
+![KeyQL Logo](/images/keyql-mark.png)
 
 ![travis-ci build](https://travis-ci.org/FunctionScript/KeyQL.svg?branch=master)
 ![npm version](https://badge.fury.io/js/keyql.svg)
