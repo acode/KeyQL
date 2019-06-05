@@ -561,7 +561,8 @@ support for our team, which has made this project possible.
 ## Special Thanks
 
 There have been a number of helpful supporters and contributors along the way,
-and FunctionScript would not be possible without any of them.
+and both KeyQL and [FunctionScript](https://github.com/FunctionScript/FunctionScript)
+would not be possible without any of them.
 
 ### Core Contributors
 
