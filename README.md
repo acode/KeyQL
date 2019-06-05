@@ -542,7 +542,41 @@ structure for writing queries using JSON.
 
 # Acknowledgements
 
-Thanks for checking out KeyQL. There's a lot more to come as the API is improved.
+Thanks for checking out KeyQL. There's a lot more to come as the API is improved!
+
+## Corporate Interests
+
+Via investments in Polybit Inc., parent of [Standard Library](https://stdlib.com),
+the following companies have invested countless hours in and provided financial
+support for our team, which has made this project possible.
+
+[Stripe](https://stripe.com), the global leader in online payments
+
+[![Stripe Logo](/images/stripe-logo-300.png)](https://stripe.com)
+
+[Slack](https://slack.com), the online platform for work and communication
+
+[![Slack Logo](/images/slack-logo-300.png)](https://slack.com)
+
+## Special Thanks
+
+There have been a number of helpful supporters and contributors along the way,
+and FunctionScript would not be possible without any of them.
+
+### Core Contributors
+
+- [**Keith Horwood**](https://twitter.com/keithwhor)
+- [**Jacob Lee**](https://twitter.com/hacubu)
+- [**Steve Meyer**](https://twitter.com/notoriaga)
+
+### Thanks to Airtable
+
+A special thanks to [Airtable](https://airtable.com) for providing a wonderful
+product and service that allowed our team to focus more on making backend tooling
+and development accessible to a larger number of developers and developer-to-be.
+Without it, this project would be unlikely to exist in present form.
+
+[![Airtable Logo](/images/airtable-logo-300.png)](https://airtable.com)
 
 ## Roadmap
 
