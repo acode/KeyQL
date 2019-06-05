@@ -26,8 +26,8 @@ without a massive architectural lift and shift.
 
 # Live Demo
 
-You can see KeyQL in action, live and as part of a FunctionScript API endpoint,
-using [Code on Standard Library](https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=functions/keyql.js) by using the following link:
+You can play with KeyQL live, as part of a FunctionScript API endpoint,
+by using [Code on Standard Library](https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=functions/keyql.js). A link has been provided to a demo below.
 
 **Note:** *In order to use Code on Standard Library you must have a registered account on [stdlib.com](https://stdlib.com), available for free.*
 
