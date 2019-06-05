@@ -13,7 +13,7 @@ codebase, but the primary purpose of KeyQL is to be used with [FunctionScript](h
 APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
 query requests to underlying datasets.
 
-KeyQL is meant for easy querying of in-memory JSON datsets, spreadsheet data,
+KeyQL is meant for easy querying of JSON datasets, spreadsheet data,
 information retrieved from APIs such as [Airtable](https://airtable.com) and
 more. It can be used to add robust querying capabilities to existing APIs
 without a massive architectural lift and shift.
