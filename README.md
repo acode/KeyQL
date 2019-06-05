@@ -5,24 +5,27 @@
 ![travis-ci build](https://travis-ci.org/FunctionScript/KeyQL.svg?branch=master)
 ![npm version](https://badge.fury.io/js/keyql.svg)
 
-KeyQL is a package, language and specification for querying datasets using key-value pairs.
+KeyQL is a language, specification and package for querying datasets using key-value pairs.
+It is heavily inspired by the simplicity and ease-of-use of [Django](https://djangoproject.com)
+and similar ORMs.
 The provided Node.js package can be used to filter large JSON datasets from within any
 codebase, but the primary purpose of KeyQL is to be used with [FunctionScript](https://github.com/FunctionScript/FunctionScript)
 APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
 query requests to underlying datasets.
 
-The motivation for KeyQL differs from that of GraphQL. They can, in theory,
-coexist within a single codebase or API implementation. KeyQL is not intended to
-be used to define an entire backend architecture and provides no opinions on
-the graph-based structure of output data (you do not define schemas with it).
-It simply provides a lightweight query language around many types of datasets, and
-is loosely based on the query implementation in [Django](https://djangoproject.com)'s
-ORM.
-
 KeyQL is meant for easy querying of in-memory JSON datsets, spreadsheet data,
 information retrieved from APIs such as [Airtable](https://airtable.com) and
 more. It can be used to add robust querying capabilities to existing APIs
 without a massive architectural lift and shift.
+
+The motivation for KeyQL differs from that of GraphQL. KeyQL is intended to provide a
+simple querying interface to existing imperative APIs and relatively flat
+datasets. The operators (comparators) are the most important feature and are
+meant to be easily interpretable by even the newest developer. KeyQL and GraphQL
+can, in theory, coexist within a single codebase or API implementation.
+KeyQL is **not intended** to be used to define an entire backend architecture
+and provides no opinions on the graph-based structure of output data
+(you do not define schemas with it).
 
 # Live Demo
 
