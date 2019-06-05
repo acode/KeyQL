@@ -43,7 +43,7 @@ https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=function
 A quick example of using KeyQL with a [FunctionScript](https://github.com/FunctionScript/FunctionScript)
 API would look like:
 
-`/dataset.json`
+**Filename:** `/dataset.json`
 ```json
 [
   {
@@ -73,7 +73,7 @@ API would look like:
 ]
 ```
 
-`functions/__main__.js`
+**Filename:** `/functions/__main__.js`
 ```javascript
 const KeyQL = require('keyql');
 const dataset = require('../dataset.json');
