@@ -572,8 +572,8 @@ and FunctionScript would not be possible without any of them.
 ### Thanks to Airtable
 
 A special thanks to [Airtable](https://airtable.com) for providing a wonderful
-product and service that allowed our team to focus more on making backend tooling
-and development accessible to a larger number of developers and developer-to-be.
+product and service. It has allowed our team to focus more on making backend tooling
+and development accessible to a larger number of developers and developers-to-be.
 Without it, this project would be unlikely to exist in present form.
 
 [![Airtable Logo](/images/airtable-logo-300.png)](https://airtable.com)
