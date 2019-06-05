@@ -6,7 +6,7 @@
 ![npm version](https://badge.fury.io/js/keyql.svg)
 
 KeyQL is a package, language and specification for querying datasets using key-value pairs.
-The provided Node.js package can be used to filter large JSON datasets from any
+The provided Node.js package can be used to filter large JSON datasets from within any
 codebase, but the primary purpose of KeyQL is to be used with [FunctionScript](https://github.com/FunctionScript/FunctionScript)
 APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
 query requests to underlying datasets.
