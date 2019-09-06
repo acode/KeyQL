@@ -1,6 +1,8 @@
 const moment = require('moment');
 moment.suppressDeprecationWarnings = true;
 
+const { isMatch, iIsMatch } = require('./wildcard');
+
 module.exports = {
   'is': (a, b) => a === b,
   'not': (a, b) => a !== b,
@@ -14,8 +16,8 @@ module.exports = {
   'istartswith': (a, b) => a.toLowerCase().startsWith(b.toLowerCase()),
   'endswith': (a, b) => a.endsWith(b),
   'iendswith': (a, b) => a.toLowerCase().endsWith(b.toLowerCase()),
-  // 'like': (a, b) => a === b, // TODO: Implement basic LIKE operator
-  // 'ilike': (a, b) => a.toLowerCase() === b.toLowerCase(), // TODO: Implement basic LIKE operator
+  'like': (a, b) => isMatch(a, b),
+  'ilike': (a, b) => iIsMatch(a, b),
   'is_null': (a, b) => a === null,
   'is_true': (a, b) => a === true,
   'is_false': (a, b) => a === false,
