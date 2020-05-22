@@ -55,7 +55,7 @@ class KeyQL  {
       blocks.length === 1 && blocks.push(KeyQL.DEFAULT_OPERATOR);
       let operator = blocks.pop();
       let compare = KeyQL.OPERATORS[operator];
-      let translate = KeyQL.TRANSLATIONS[operator];
+      let translate = KeyQL.LANGUAGES;
 
       if (!compare) {
         throw new Error(`Invalid KeyQL Operator: "${operator}"`);
@@ -64,7 +64,8 @@ class KeyQL  {
         key: blocks.join('__'),
         value: keyQLQueryObject[key],
         compare: compare,
-        translate: translate
+        translate: translate,
+        operator: operator
       };
     });
   }
@@ -104,11 +105,17 @@ class KeyQL  {
     return mapFunction;
   }
 
-  static translate (keyQLQuery, language) {
-    if (!(language in KeyQL.LANGUAGES)) {
-      throw new Error(`Unsupported translation language provided: ${language}`)
+  static validateLanguage (language) {
+    if (!(language in KeyQL.LANGUAGES) || !(language in KeyQL.TRANSLATIONS)) {
+      throw new Error(`Unsupported translation language provided: ${language}`);
     }
-    return KeyQL.LANGUAGES[language](keyQLQuery);
+    return KeyQL.TRANSLATIONS[language];
+  }
+
+  static translate (keyQLQuery, language) {
+    let validatedTranslationLangauge = KeyQL.validateLanguage(language);
+    let validatedKeyQLQuery = KeyQL.validateQuery(keyQLQuery);
+    return validatedTranslationLangauge(validatedKeyQLQuery);
   }
 
   constructor (dataset = [], mapFunction = v => v) {
@@ -166,13 +173,12 @@ class KeyQL  {
 KeyQL.DELIMITER = '__';
 KeyQL.DEFAULT_OPERATOR = 'is';
 KeyQL.OPERATORS = require('./operators/operators.js');
-KeyQL.TRANSLATIONS = require('./operators/translations/translations.js');
-KeyQL.LANGUAGES = {
-  'shopifyQL': (keyQLQuery) => {
-    let validated = KeyQL.validateQuery(keyQLQuery);
-    let shopifySearchQuery = '(' + validated.map(queryObj => {
+KeyQL.LANGUAGES = require('./operators/translations/languages.js');
+KeyQL.TRANSLATIONS = {
+  'shopifyQL': (validatedKeyQLQuery) => {
+    let shopifySearchQuery = '(' + validatedKeyQLQuery.map(queryObj => {
       return queryObj.map(entry => {
-        return entry.translate.shopifyQL(entry.key, entry.value);
+        return entry.translate.shopifyQL[entry.operator](entry.key, entry.value);
       }).join(' AND ');
     }).join(') OR (') + ')';
     return shopifySearchQuery;

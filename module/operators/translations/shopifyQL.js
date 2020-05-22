@@ -14,12 +14,12 @@ module.exports = {
   'lt': (a, b) => `${a}:<\\"${escapeSpecialChars(b)}\\"`,
   'gte': (a, b) => `${a}:>=\\"${escapeSpecialChars(b)}\\"`,
   'lte': (a, b) => `${a}:<=\\"${escapeSpecialChars(b)}\\"`,
-  'icontains': (a, b) => ``, // NOT SUPPORTED BY SHOPIFY
-  'contains': (a, b) => ``, // NOT SUPPORTED BY SHOPIFY
-  'startswith': (a, b) => ``, // NOT SUPPORTED BY SHOPIFY
+  'icontains': (a, b) => { throw new Error('Operator `icontains` not supported by Shopify') },
+  'contains': (a, b) => { throw new Error('Operator `contains` not supported by Shopify') },
+  'startswith': (a, b) => { throw new Error('Operator `startswith` not supported by Shopify') },
   'istartswith': (a, b) => `${a}:\\"${escapeSpecialChars(b)}\\"*`,
-  'endswith': (a, b) => ``, // NOT SUPPORTED BY SHOPIFY
-  'iendswith': (a, b) => ``, // NOT SUPPORTED BY SHOPIFY
+  'endswith': (a, b) => { throw new Error('Operator `endswith` not supported by Shopify') },
+  'iendswith': (a, b) => { throw new Error('Operator `iendswith` not supported by Shopify') },
   'is_null': (a, b) => `-${a}:*`,
   'is_true': (a, b) => `${a}:true`,
   'is_false': (a, b) => `${a}:false`,

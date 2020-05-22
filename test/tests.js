@@ -1168,25 +1168,73 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
 
   });
 
-  // TODO: Remove when we have a way to exclude unsupported operators from the frontend
-  it('Should test translating unsupported operators', () => {
+  it('Should throw an error with translating unsupported operator "icontains"', () => {
 
-    let translation;
+    let translation, error;
 
-    translation = KeyQL.translate([{title__icontains: 'T-Shirt'}], language);
-    expect(translation).to.equal(`()`);
+    try {
+      translation = KeyQL.translate([{title__icontains: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `icontains` not supported by Shopify');
 
-    translation = KeyQL.translate([{title__contains: 'T-Shirt'}], language);
-    expect(translation).to.equal(`()`);
+  });
 
-    translation = KeyQL.translate([{title__startswith: 'T-Shirt'}], language);
-    expect(translation).to.equal(`()`);
+  it('Should throw an error with translating unsupported operator "contains"', () => {
 
-    translation = KeyQL.translate([{title__endswith: 'T-Shirt'}], language);
-    expect(translation).to.equal(`()`);
+    let translation, error;
 
-    translation = KeyQL.translate([{title__iendswith: 'T-Shirt'}], language);
-    expect(translation).to.equal(`()`);
+    try {
+      translation = KeyQL.translate([{title__contains: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `contains` not supported by Shopify');
+
+  });
+
+  it('Should throw an error with translating unsupported operator "startswith"', () => {
+
+    let translation, error;
+
+    try {
+      translation = KeyQL.translate([{title__startswith: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `startswith` not supported by Shopify');
+
+  });
+
+  it('Should throw an error with translating unsupported operator "endswith"', () => {
+
+    let translation, error;
+
+    try {
+      translation = KeyQL.translate([{title__endswith: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `endswith` not supported by Shopify');
+
+  });
+
+  it('Should throw an error with translating unsupported operator "iendswith"', () => {
+
+    let translation, error;
+
+    try {
+      translation = KeyQL.translate([{title__iendswith: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `iendswith` not supported by Shopify');
 
   });
 
