@@ -1178,7 +1178,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `icontains` not supported by Shopify');
+    expect(error.message).to.equal('Operator `icontains` not supported');
 
   });
 
@@ -1192,7 +1192,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `contains` not supported by Shopify');
+    expect(error.message).to.equal('Operator `contains` not supported');
 
   });
 
@@ -1206,7 +1206,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `startswith` not supported by Shopify');
+    expect(error.message).to.equal('Operator `startswith` not supported');
 
   });
 
@@ -1220,7 +1220,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `endswith` not supported by Shopify');
+    expect(error.message).to.equal('Operator `endswith` not supported');
 
   });
 
@@ -1234,7 +1234,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `iendswith` not supported by Shopify');
+    expect(error.message).to.equal('Operator `iendswith` not supported');
 
   });
 
