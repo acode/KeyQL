@@ -38,14 +38,14 @@ class KeyQL  {
     return fields;
   }
 
-  static validateQuery (keyQLQuery) {
+  static validateQuery (keyQLQuery, validKeys = []) {
     if (!Array.isArray(keyQLQuery)) {
       throw new Error('KeyQL Query must be a valid array');
     }
-    return keyQLQuery.map(keyQLQueryObject => this.validateQueryObject(keyQLQueryObject));
+    return keyQLQuery.map(keyQLQueryObject => this.validateQueryObject(keyQLQueryObject, validKeys));
   }
 
-  static validateQueryObject (keyQLQueryObject) {
+  static validateQueryObject (keyQLQueryObject, validKeys = []) {
     if (!keyQLQueryObject || typeof keyQLQueryObject !== 'object') {
       throw new Error('KeyQL Query Object must be a valid object');
     }
@@ -58,8 +58,12 @@ class KeyQL  {
       if (!compare) {
         throw new Error(`Invalid KeyQL Operator: "${operator}"`);
       }
+      var key = blocks.join('__');
+      if (validKeys.length && validKeys.indexOf(key) === -1) {
+        throw new Error(`Invalid KeyQL Key: "${key}", valid keys are "${validKeys.join('", "')}"`);
+      }
       return {
-        key: blocks.join('__'),
+        key: key,
         value: keyQLQueryObject[key],
         compare: compare
       };
