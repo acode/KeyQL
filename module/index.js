@@ -58,12 +58,12 @@ class KeyQL  {
       if (!compare) {
         throw new Error(`Invalid KeyQL Operator: "${operator}"`);
       }
-      var key = blocks.join('__');
-      if (validKeys.length && validKeys.indexOf(key) === -1) {
-        throw new Error(`Invalid KeyQL Key: "${key}", valid keys are "${validKeys.join('", "')}"`);
+      var parsedKey = blocks.join('__');
+      if (validKeys.length && validKeys.indexOf(parsedKey) === -1) {
+        throw new Error(`Invalid KeyQL Key: "${parsedKey}", valid keys are "${validKeys.join('", "')}"`);
       }
       return {
-        key: key,
+        key: parsedKey,
         value: keyQLQueryObject[key],
         compare: compare
       };
