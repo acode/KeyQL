@@ -6,6 +6,49 @@ const { isMatch, iIsMatch } = require('../module/operators/wildcard.js');
 
 const datasets = require('./datasets.json');
 
+describe('KeyQL Validation', () => {
+
+  it ('Should throw an error when there\'s an invalid operator', () => {
+
+    let err;
+    try {
+      KeyQL.validateQueryObject({name__err: 'hello'});
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.exist;
+
+  });
+
+  it ('Should not throw an error when there\'s an valid key', () => {
+
+    let err;
+    try {
+      KeyQL.validateQueryObject({name__is: 'hello'}, ['name']);
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.not.exist;
+
+  });
+
+  it ('Should throw an error when there\'s an invalid key', () => {
+
+    let err;
+    try {
+      KeyQL.validateQueryObject({name__is: 'hello'}, ['age']);
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.exist;
+
+  });
+
+});
+
 describe('KeyQL Setup Tests', () => {
 
   it ('Should query an empty dataset with no parameters provided', () => {
