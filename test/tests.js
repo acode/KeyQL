@@ -1,7 +1,53 @@
-const KeyQL = require('../module/index.js');
 const expect = require('chai').expect;
-const datasets = require('./datasets.json');
 const moment = require('moment');
+
+const KeyQL = require('../module/index.js');
+const { isMatch, iIsMatch } = require('../module/operators/wildcard.js');
+
+const datasets = require('./datasets.json');
+
+describe('KeyQL Validation', () => {
+
+  it ('Should throw an error when there\'s an invalid operator', () => {
+
+    let err;
+    try {
+      KeyQL.validateQueryObject({name__err: 'hello'});
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.exist;
+
+  });
+
+  it ('Should not throw an error when there\'s an valid key', () => {
+
+    let err;
+    try {
+      KeyQL.validateQueryObject({name__is: 'hello'}, ['name']);
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.not.exist;
+
+  });
+
+  it ('Should throw an error when there\'s an invalid key', () => {
+
+    let err;
+    try {
+      KeyQL.validateQueryObject({name__is: 'hello'}, ['age']);
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.exist;
+
+  });
+
+});
 
 describe('KeyQL Setup Tests', () => {
 
@@ -339,6 +385,70 @@ describe('KeyQL Operator Tests', () => {
     expect(rows[1].first_name).to.not.be.oneOf(['Arya', 'Jon']);
     expect(rows[2].first_name).to.not.be.oneOf(['Arya', 'Jon']);
     expect(rows[3].first_name).to.not.be.oneOf(['Arya', 'Jon']);
+
+  });
+
+  it('Should select query with "like" operator', () => {
+
+    let rows = GOT.query().select([{last_name__like: 'S%'}]).values();
+    expect(rows.length).to.equal(5);
+
+    let names = rows.reduce((names, row) => {
+      names.add(row.last_name);
+      return names;
+    }, new Set());
+    expect(Array.from(names)).to.deep.equal(['Snow', 'Stark']);
+
+    rows = GOT.query().select([{last_name__like: 'S%k'}]).values();
+    expect(rows.length).to.equal(3);
+
+    names = rows.reduce((names, row) => {
+      names.add(row.last_name);
+      return names;
+    }, new Set());
+    expect(Array.from(names)).to.deep.equal(['Stark']);
+
+
+    rows = GOT.query().select([{first_name__like: 'R%s_'}]).values();
+    expect(rows.length).to.equal(1);
+
+    names = rows.reduce((names, row) => {
+      names.add(row.first_name);
+      return names;
+    }, new Set());
+    expect(Array.from(names)).to.deep.equal(['Roose']);
+
+  });
+
+  it('Should select query with "ilike" operator', () => {
+
+    let rows = GOT.query().select([{last_name__ilike: 's%'}]).values();
+    expect(rows.length).to.equal(5);
+
+    let names = rows.reduce((names, row) => {
+      names.add(row.last_name);
+      return names;
+    }, new Set());
+    expect(Array.from(names)).to.deep.equal(['Snow', 'Stark']);
+
+    rows = GOT.query().select([{last_name__ilike: 's%K'}]).values();
+    expect(rows.length).to.equal(3);
+
+    names = rows.reduce((names, row) => {
+      names.add(row.last_name);
+      return names;
+    }, new Set());
+    expect(Array.from(names)).to.deep.equal(['Stark']);
+
+
+    rows = GOT.query().select([{first_name__ilike: 'r%s_'}]).values();
+    expect(rows.length).to.equal(1);
+
+    names = rows.reduce((names, row) => {
+      names.add(row.first_name);
+      return names;
+    }, new Set());
+    expect(Array.from(names)).to.deep.equal(['Roose']);
 
   });
 
@@ -705,6 +815,128 @@ describe('KeyQL Update Tests', () => {
 
     rows = COMMIT.query().select([{pets: null}]).values();
     expect(rows.length).to.equal(3);
+
+  });
+
+});
+
+describe('Wildcard Matching Tests', () => {
+
+  it('Should match exact strings', () => {
+
+    expect(isMatch('hello', 'hello')).to.be.true;
+    expect(iIsMatch('world', 'world')).to.be.true;
+
+  });
+
+  it('Should match empty pattern against empty string', () => {
+
+    expect(isMatch('', '')).to.be.true;
+    expect(iIsMatch('', '')).to.be.true;
+
+  });
+
+  it('Should not match empty pattern against a string', () => {
+
+    expect(isMatch('hello', '')).to.be.false;
+    expect(iIsMatch('world', '')).to.be.false;
+
+  });
+
+  it('Should match with wildcard pattern', () => {
+
+    expect(isMatch('hello', 'h_llo')).to.be.true;
+    expect(iIsMatch('hello', 'h_llo')).to.be.true;
+
+  });
+
+  it('Should match with multiple wildcard patterns', () => {
+
+    expect(isMatch('hello', '_____')).to.be.true;
+    expect(iIsMatch('hello', '_____')).to.be.true;
+
+  });
+
+  it('Should match with glob pattern', () => {
+
+    expect(isMatch('banana', '%ana')).to.be.true;
+    expect(iIsMatch('BaNaNa', '%ana')).to.be.true;
+
+  });
+
+  it('Should match with multiple glob patterns', () => {
+
+    expect(isMatch('HeLlo', '%Ll%')).to.be.true;
+    expect(iIsMatch('HeLlo', '%ll%')).to.be.true;
+
+  });
+
+  it('Should match with wildcard and glob patterns', () => {
+
+    expect(isMatch('banana', '%an_')).to.be.true;
+    expect(iIsMatch('BaNaNa', '%an_')).to.be.true;
+
+  });
+
+  it('Should not match without insensitive matching', () => {
+
+    expect(isMatch('Hello', '%h%')).to.be.false;
+    expect(iIsMatch('Hello', '%h%')).to.be.true;
+
+  });
+
+  it('Should match with escaped wildcard', () => {
+
+    expect(isMatch('H_llo', 'H\\_llo')).to.be.true;
+    expect(isMatch('H__lo', 'H\\_\\_lo')).to.be.true;
+    expect(isMatch('H_lzo', 'H\\_l_o')).to.be.true;
+    expect(iIsMatch('h_llo', 'H\\_llo')).to.be.true;
+    expect(iIsMatch('h__LO', 'H\\_\\_lo')).to.be.true;
+    expect(iIsMatch('H_lzo', 'h\\_l_o')).to.be.true;
+
+  });
+
+  it('Should not match with escaped wildcard', () => {
+
+    expect(isMatch('Hello', 'H\\_llo')).to.be.false;
+    expect(iIsMatch('hello', 'H\\_LLo')).to.be.false;
+
+  });
+
+
+  it('Should match with escaped glob', () => {
+
+    expect(isMatch('He%o', 'He\\%o')).to.be.true;
+    expect(isMatch('He%y%o', 'He\\%y\\%o')).to.be.true;
+    expect(isMatch('He%y%oooo', 'He\\%y\\%%')).to.be.true;
+    expect(iIsMatch('He%o', 'he\\%o')).to.be.true;
+    expect(iIsMatch('He%Y%O', 'he\\%y\\%o')).to.be.true;
+    expect(iIsMatch('he%Y%oOOo', 'He\\%y\\%%')).to.be.true;
+
+  });
+
+  it('Should not match with escaped glob', () => {
+
+    expect(isMatch('Heyo', 'He\\%o')).to.be.false;
+    expect(isMatch('Heyo', 'He\\%o')).to.be.false;
+
+  });
+
+  it('Should match with escaped glob and wildcard', () => {
+
+    expect(isMatch('%_%', '\\%\\_\\%')).to.be.true;
+    expect(isMatch('hello %_% world', '% \\%\\_\\% %')).to.be.true;
+    expect(iIsMatch('%_%', '\\%\\_\\%')).to.be.true;
+    expect(iIsMatch('HELLO %_% world', '% \\%\\_\\% %')).to.be.true;
+
+  });
+
+  it('Should not match with escaped glob and wildcard', () => {
+
+    expect(isMatch('%a%', '\\%\\_\\%')).to.be.false;
+    expect(isMatch('hello %_% world', '% \\%\\_\\% \\%')).to.be.false;
+    expect(iIsMatch('%A%', '\\%\\_\\%')).to.be.false;
+    expect(iIsMatch('HELLO %_% world', '% \\%\\_\\% \\%')).to.be.false;
 
   });
 
