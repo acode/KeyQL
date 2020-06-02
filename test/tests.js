@@ -288,6 +288,22 @@ describe('KeyQL Operator Tests', () => {
 
   });
 
+  it('Should select query with "wordstartswith" operator', () => {
+
+    let rows = GOT.query().select([{bio__wordstartswith: 'tar'}]).values();
+    expect(rows.length).to.equal(0);
+
+    rows = GOT.query().select([{bio__wordstartswith: 'Lor'}]).values();
+    expect(rows.length).to.equal(1);
+    expect(rows[0].first_name).to.equal('Roose');
+
+    rows = GOT.query().select([{bio__wordstartswith: 'Bolton'}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].first_name).to.equal('Roose');
+    expect(rows[1].first_name).to.equal('Ramsay');
+
+  });
+
   it('Should select query with "iwordstartswith" operator', () => {
 
     let rows = GOT.query().select([{bio__iwordstartswith: 'tar'}]).values();
@@ -323,6 +339,42 @@ describe('KeyQL Operator Tests', () => {
     expect(rows.length).to.equal(2);
     expect(rows[0].first_name).to.equal('Jon');
     expect(rows[1].first_name).to.equal('Catelyn');
+
+  });
+
+  it('Should select query with "wordendswith" operator', () => {
+
+    let rows = GOT.query().select([{bio__wordendswith: 'ince'}]).values();
+    expect(rows.length).to.equal(1);
+    expect(rows[0].first_name).to.equal('Jon');
+
+    rows = GOT.query().select([{bio__wordendswith: 'Ark'}]).values();
+    expect(rows.length).to.equal(0);
+
+    rows = GOT.query().select([{bio__wordendswith: 'Bolton'}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].first_name).to.equal('Roose');
+    expect(rows[1].first_name).to.equal('Ramsay');
+
+  });
+
+  it('Should select query with "iwordendswith" operator', () => {
+
+    let rows = GOT.query().select([{bio__iwordendswith: 'ince'}]).values();
+    expect(rows.length).to.equal(1);
+    expect(rows[0].first_name).to.equal('Jon');
+
+    rows = GOT.query().select([{bio__iwordendswith: 'Ark'}]).values();
+    expect(rows.length).to.equal(4);
+    expect(rows[0].first_name).to.equal('Jon');
+    expect(rows[1].first_name).to.equal('Eddard');
+    expect(rows[2].first_name).to.equal('Catelyn');
+    expect(rows[3].first_name).to.equal('Arya');
+
+    rows = GOT.query().select([{bio__iwordendswith: 'Bolton'}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].first_name).to.equal('Roose');
+    expect(rows[1].first_name).to.equal('Ramsay');
 
   });
 
@@ -1459,7 +1511,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
 
   });
 
-  it('Should throw an error with translating unsupported operator "startswith"', () => {
+  it('Should throw an error with translating unsupported operator "istartswith"', () => {
 
     let translation, error;
 
@@ -1470,6 +1522,48 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
     }
     expect(error).to.exist;
     expect(error.message).to.equal('Operator `istartswith` not supported');
+
+  });
+
+  it('Should throw an error with translating unsupported operator "wordstartswith"', () => {
+
+    let translation, error;
+
+    try {
+      translation = KeyQL.translate([{title__wordstartswith: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `wordstartswith` not supported');
+
+  });
+
+  it('Should throw an error with translating unsupported operator "wordendswith"', () => {
+
+    let translation, error;
+
+    try {
+      translation = KeyQL.translate([{title__wordendswith: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `wordendswith` not supported');
+
+  });
+
+  it('Should throw an error with translating unsupported operator "iwordendswith"', () => {
+
+    let translation, error;
+
+    try {
+      translation = KeyQL.translate([{title__iwordendswith: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `iwordendswith` not supported');
 
   });
 
