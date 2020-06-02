@@ -288,6 +288,23 @@ describe('KeyQL Operator Tests', () => {
 
   });
 
+  it('Should select query with "iwordstartswith" operator', () => {
+
+    let rows = GOT.query().select([{bio__iwordstartswith: 'tar'}]).values();
+    expect(rows.length).to.equal(1);
+    expect(rows[0].first_name).to.equal('Jon');
+
+    rows = GOT.query().select([{bio__iwordstartswith: 'LOR'}]).values();
+    expect(rows.length).to.equal(1);
+    expect(rows[0].first_name).to.equal('Roose');
+
+    rows = GOT.query().select([{bio__iwordstartswith: 'bolton'}]).values();
+    expect(rows.length).to.equal(2);
+    expect(rows[0].first_name).to.equal('Roose');
+    expect(rows[1].first_name).to.equal('Ramsay');
+
+  });
+
   it('Should select query with "iendswith" operator', () => {
 
     let rows = GOT.query().select([{first_name__iendswith: 'N'}]).values();
@@ -1115,17 +1132,17 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
 
   });
 
-  it('Should translate query with "istartswith" operator', () => {
+  it('Should translate query with "iwordstartswith" operator', () => {
 
     let translation;
 
-    translation = KeyQL.translate([{title__istartswith: 'T-Shirt'}], language);
+    translation = KeyQL.translate([{title__iwordstartswith: 'T-Shirt'}], language);
     expect(translation).to.equal('(title:\\"T-Shirt\\"*)');
 
-    translation = KeyQL.translate([{title__istartswith: 'Blue T-Shirt'}], language);
+    translation = KeyQL.translate([{title__iwordstartswith: 'Blue T-Shirt'}], language);
     expect(translation).to.equal('(title:\\"Blue T-Shirt\\"*)');
 
-    translation = KeyQL.translate([{title__istartswith: 'Spe:cial : (hars ( ) \\Pro)uct'}], language);
+    translation = KeyQL.translate([{title__iwordstartswith: 'Spe:cial : (hars ( ) \\Pro)uct'}], language);
     expect(translation).to.equal('(title:\\"Spe\\:cial \\: \\(hars \\( \\) \\\\Pro\\)uct\\"*)');
 
   });
@@ -1442,6 +1459,20 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
 
   });
 
+  it('Should throw an error with translating unsupported operator "startswith"', () => {
+
+    let translation, error;
+
+    try {
+      translation = KeyQL.translate([{title__istartswith: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `istartswith` not supported');
+
+  });
+
   it('Should throw an error with translating unsupported operator "endswith"', () => {
 
     let translation, error;
@@ -1467,6 +1498,34 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
     }
     expect(error).to.exist;
     expect(error.message).to.equal('Operator `iendswith` not supported');
+
+  });
+
+  it('Should throw an error with translating unsupported operator "like"', () => {
+
+    let translation, error;
+
+    try {
+      translation = KeyQL.translate([{title__like: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `like` not supported');
+
+  });
+
+  it('Should throw an error with translating unsupported operator "ilike"', () => {
+
+    let translation, error;
+
+    try {
+      translation = KeyQL.translate([{title__ilike: 'T-Shirt'}], language);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+    expect(error.message).to.equal('Operator `ilike` not supported');
 
   });
 

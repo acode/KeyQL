@@ -9,7 +9,8 @@
       "location": "Winterfell",
       "is_sean_bean": false,
       "lives_remaining": null,
-      "alliances": ["Stark", "Targaryen", "Free Folk"]
+      "alliances": ["Stark", "Targaryen", "Free Folk"],
+      "bio": "Jon Snow was the son of Lyanna Stark and Rhaegar Targaryen, the late Prince of Dragonstone."
     },
     {
       "id": 2,
@@ -20,7 +21,8 @@
       "location": "Winterfell",
       "is_sean_bean": true,
       "lives_remaining": 0,
-      "alliances": ["Stark", "Baratheon"]
+      "alliances": ["Stark", "Baratheon"],
+      "bio": "Eddard Stark was the head of House Stark."
     },
     {
       "id": 3,
@@ -31,7 +33,8 @@
       "location": "Winterfell",
       "is_sean_bean": null,
       "lives_remaining": 0,
-      "alliances": ["Stark", "Arryn"]
+      "alliances": ["Stark", "Arryn"],
+      "bio": "Catelyn Stark was born into House Tully as the daughter of Hoster Tully, and sister of Lysa and Edmure Tully."
     },
     {
       "id": 4,
@@ -42,7 +45,8 @@
       "location": "Dreadfort",
       "is_sean_bean": false,
       "lives_remaining": 0,
-      "alliances": ["Bolton", "Lannister"]
+      "alliances": ["Bolton", "Lannister"],
+      "bio": "Roose Bolton was the Lord of the Dreadfort and the head of House Bolton."
     },
     {
       "id": 5,
@@ -53,7 +57,8 @@
       "location": "Dreadfort",
       "is_sean_bean": false,
       "lives_remaining": 0,
-      "alliances": ["Bolton"]
+      "alliances": ["Bolton"],
+      "bio": "Ramsay Bolton was the legitimized son of Roose Bolton."
     },
     {
       "id": 6,
@@ -64,7 +69,8 @@
       "location": "Sea",
       "is_sean_bean": null,
       "lives_remaining": 1,
-      "alliances": ["Stark"]
+      "alliances": ["Stark"],
+      "bio": "Arya Stark was the third child of Eddard Stark and Catelyn Stark."
     }
   ],
   "spreadsheet": [

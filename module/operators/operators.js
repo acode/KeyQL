@@ -14,6 +14,7 @@ module.exports = {
   'contains': (a, b) => a.indexOf(b) > -1,
   'startswith': (a, b) => a.startsWith(b),
   'istartswith': (a, b) => a.toLowerCase().startsWith(b.toLowerCase()),
+  'iwordstartswith': (a, b) => a.toLowerCase().split(' ').reduce((matched, word) => matched || word.startsWith(b.toLowerCase()), false),
   'endswith': (a, b) => a.endsWith(b),
   'iendswith': (a, b) => a.toLowerCase().endsWith(b.toLowerCase()),
   'like': (a, b) => isMatch(a, b),
