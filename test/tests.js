@@ -1027,7 +1027,7 @@ describe('KeyQL Translation Tests', () => {
 
 describe('KeyQL to ShopifyQL Translation Tests', () => {
 
-  let language = 'shopifyQL';
+  let language = 'ShopifyQL';
   let dateTimeFormat = 'YYYY-MM-DDTHH:mm:ssZ';
 
   const formatDateTime = (dateTime) => dateTime.format(dateTimeFormat).replace(/\+00:00/g, 'Z');

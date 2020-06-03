@@ -1,6 +1,6 @@
 module.exports = {
-  shopifyQL: {
-    operators: require('./languages/shopifyQL.js'),
+  ShopifyQL: {
+    operators: require('./languages/ShopifyQL.js'),
     translate: (keyQLQuery, operators) => {
       return '(' + keyQLQuery.map(queryObj => {
         return queryObj.map(entry => {
