@@ -182,6 +182,9 @@ KeyQL.TRANSLATIONS = {
   'shopifyQL': (validatedKeyQLQuery) => {
     let shopifySearchQuery = '(' + validatedKeyQLQuery.map(queryObj => {
       return queryObj.map(entry => {
+        if (!entry.translate.shopifyQL[entry.operator]) {
+          throw new Error(`Operator \`${entry.operator}\` not supported`);
+        }
         return entry.translate.shopifyQL[entry.operator](entry.key, entry.value);
       }).join(' AND ');
     }).join(') OR (') + ')';
