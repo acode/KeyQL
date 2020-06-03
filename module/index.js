@@ -55,6 +55,8 @@ class KeyQL  {
       blocks.length === 1 && blocks.push(KeyQL.DEFAULT_OPERATOR);
       let operator = blocks.pop();
       let compare = KeyQL.OPERATORS[operator];
+      let translate = KeyQL.LANGUAGES;
+
       if (!compare) {
         throw new Error(`Invalid KeyQL Operator: "${operator}"`);
       }
@@ -65,7 +67,9 @@ class KeyQL  {
       return {
         key: parsedKey,
         value: keyQLQueryObject[key],
-        compare: compare
+        compare: compare,
+        translate: translate,
+        operator: operator
       };
     });
   }
@@ -103,6 +107,19 @@ class KeyQL  {
       throw new Error('KeyQL mapFunction must be a valid function');
     }
     return mapFunction;
+  }
+
+  static validateLanguage (language) {
+    if (!(language in KeyQL.LANGUAGES) || !(language in KeyQL.TRANSLATIONS)) {
+      throw new Error(`Unsupported translation language provided: ${language}`);
+    }
+    return KeyQL.TRANSLATIONS[language];
+  }
+
+  static translate (keyQLQuery, language) {
+    let validatedTranslationLangauge = KeyQL.validateLanguage(language);
+    let validatedKeyQLQuery = KeyQL.validateQuery(keyQLQuery);
+    return validatedTranslationLangauge(validatedKeyQLQuery);
   }
 
   constructor (dataset = [], mapFunction = v => v) {
@@ -160,5 +177,20 @@ class KeyQL  {
 KeyQL.DELIMITER = '__';
 KeyQL.DEFAULT_OPERATOR = 'is';
 KeyQL.OPERATORS = require('./operators/operators.js');
+KeyQL.LANGUAGES = require('./operators/translations/languages.js');
+KeyQL.TRANSLATIONS = {
+  'shopifyQL': (validatedKeyQLQuery) => {
+    let shopifySearchQuery = '(' + validatedKeyQLQuery.map(queryObj => {
+      return queryObj.map(entry => {
+        if (!entry.translate.shopifyQL[entry.operator]) {
+          throw new Error(`Operator \`${entry.operator}\` not supported`);
+        }
+        return entry.translate.shopifyQL[entry.operator](entry.key, entry.value);
+      }).join(' AND ');
+    }).join(') OR (') + ')';
+    return shopifySearchQuery;
+  }
+};
+
 
 module.exports = KeyQL;
