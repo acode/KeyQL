@@ -113,7 +113,10 @@ class KeyQL  {
       throw new Error(`Invalid KeyQL Translator: "${language}"`);
     }
     let translator = KeyQL.TRANSLATORS[language];
-    return translator.translate(KeyQL.validateQuery(keyQLQuery, validKeys, translator.operators), translator.operators);
+    return translator.translate(
+      KeyQL.validateQuery(keyQLQuery, validKeys, translator.operators),
+      translator.operators
+    );
   };
 
   constructor (dataset = [], mapFunction = v => v) {
