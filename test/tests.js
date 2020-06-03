@@ -1479,7 +1479,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `icontains` not supported');
+    expect(error.message).to.contain('"icontains"');
 
   });
 
@@ -1493,7 +1493,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `contains` not supported');
+    expect(error.message).to.contain('"contains"');
 
   });
 
@@ -1507,7 +1507,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `startswith` not supported');
+    expect(error.message).to.contain('"startswith"');
 
   });
 
@@ -1521,7 +1521,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `istartswith` not supported');
+    expect(error.message).to.contain('"istartswith"');
 
   });
 
@@ -1535,7 +1535,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `wordstartswith` not supported');
+    expect(error.message).to.contain('"wordstartswith"');
 
   });
 
@@ -1549,7 +1549,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `wordendswith` not supported');
+    expect(error.message).to.contain('"wordendswith"');
 
   });
 
@@ -1563,7 +1563,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `iwordendswith` not supported');
+    expect(error.message).to.contain('"iwordendswith"');
 
   });
 
@@ -1577,7 +1577,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `endswith` not supported');
+    expect(error.message).to.contain('"endswith"');
 
   });
 
@@ -1591,7 +1591,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `iendswith` not supported');
+    expect(error.message).to.contain('"iendswith"');
 
   });
 
@@ -1605,7 +1605,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `like` not supported');
+    expect(error.message).to.contain('"like"');
 
   });
 
@@ -1619,7 +1619,7 @@ describe('KeyQL to ShopifyQL Translation Tests', () => {
       error = e;
     }
     expect(error).to.exist;
-    expect(error.message).to.equal('Operator `ilike` not supported');
+    expect(error.message).to.contain('"ilike"');
 
   });
 

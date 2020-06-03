@@ -38,14 +38,14 @@ class KeyQL  {
     return fields;
   }
 
-  static validateQuery (keyQLQuery, validKeys = []) {
+  static validateQuery (keyQLQuery, validKeys = [], operators = KeyQL.OPERATORS) {
     if (!Array.isArray(keyQLQuery)) {
       throw new Error('KeyQL Query must be a valid array');
     }
-    return keyQLQuery.map(keyQLQueryObject => this.validateQueryObject(keyQLQueryObject, validKeys));
+    return keyQLQuery.map(keyQLQueryObject => this.validateQueryObject(keyQLQueryObject, validKeys, operators));
   }
 
-  static validateQueryObject (keyQLQueryObject, validKeys = []) {
+  static validateQueryObject (keyQLQueryObject, validKeys = [], operators = KeyQL.OPERATORS) {
     if (!keyQLQueryObject || typeof keyQLQueryObject !== 'object') {
       throw new Error('KeyQL Query Object must be a valid object');
     }
@@ -55,10 +55,10 @@ class KeyQL  {
       blocks.length === 1 && blocks.push(KeyQL.DEFAULT_OPERATOR);
       let operator = blocks.pop();
       let compare = KeyQL.OPERATORS[operator];
-      let translate = KeyQL.LANGUAGES;
-
       if (!compare) {
         throw new Error(`Invalid KeyQL Operator: "${operator}"`);
+      } else if (!operators[operator]) {
+        throw new Error(`Unavailable KeyQL Operator: "${operator}"`);
       }
       var parsedKey = blocks.join('__');
       if (validKeys.length && validKeys.indexOf(parsedKey) === -1) {
@@ -68,7 +68,6 @@ class KeyQL  {
         key: parsedKey,
         value: keyQLQueryObject[key],
         compare: compare,
-        translate: translate,
         operator: operator
       };
     });
@@ -109,18 +108,13 @@ class KeyQL  {
     return mapFunction;
   }
 
-  static validateLanguage (language) {
-    if (!(language in KeyQL.LANGUAGES) || !(language in KeyQL.TRANSLATIONS)) {
-      throw new Error(`Unsupported translation language provided: ${language}`);
+  static translate (keyQLQuery, language, validKeys = []) {
+    if (!(language in KeyQL.TRANSLATORS)) {
+      throw new Error(`Invalid KeyQL Translator: "${language}"`);
     }
-    return KeyQL.TRANSLATIONS[language];
-  }
-
-  static translate (keyQLQuery, language) {
-    let validatedTranslationLangauge = KeyQL.validateLanguage(language);
-    let validatedKeyQLQuery = KeyQL.validateQuery(keyQLQuery);
-    return validatedTranslationLangauge(validatedKeyQLQuery);
-  }
+    let translator = KeyQL.TRANSLATORS[language];
+    return translator.translate(KeyQL.validateQuery(keyQLQuery, validKeys, translator.operators), translator.operators);
+  };
 
   constructor (dataset = [], mapFunction = v => v) {
     this._dataset = this.constructor.validateDataset(dataset);
@@ -177,20 +171,6 @@ class KeyQL  {
 KeyQL.DELIMITER = '__';
 KeyQL.DEFAULT_OPERATOR = 'is';
 KeyQL.OPERATORS = require('./operators/operators.js');
-KeyQL.LANGUAGES = require('./operators/translations/languages.js');
-KeyQL.TRANSLATIONS = {
-  'shopifyQL': (validatedKeyQLQuery) => {
-    let shopifySearchQuery = '(' + validatedKeyQLQuery.map(queryObj => {
-      return queryObj.map(entry => {
-        if (!entry.translate.shopifyQL[entry.operator]) {
-          throw new Error(`Operator \`${entry.operator}\` not supported`);
-        }
-        return entry.translate.shopifyQL[entry.operator](entry.key, entry.value);
-      }).join(' AND ');
-    }).join(') OR (') + ')';
-    return shopifySearchQuery;
-  }
-};
-
+KeyQL.TRANSLATORS = require('./operators/translators.js');
 
 module.exports = KeyQL;
