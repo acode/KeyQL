@@ -170,18 +170,7 @@ describe('KeyQL Setup Tests', () => {
     expect(error).to.exist;
   });
 
-  it ('Should throw an error when an non-object (array) limit is provided', () => {
-    let rows, error;
-    let keyQL = new KeyQL([]);
-    try {
-      rows = keyQL.query().select([]).order([]);
-    } catch (e) {
-      error = e;
-    }
-    expect(error).to.exist;
-  });
-
-  it ('Should throw an error when order field is not provided', () => {
+  it ('Should throw an error when an object limit is provided', () => {
     let rows, error;
     let keyQL = new KeyQL([]);
     try {
@@ -192,11 +181,22 @@ describe('KeyQL Setup Tests', () => {
     expect(error).to.exist;
   });
 
+  it ('Should throw an error when order field is not provided', () => {
+    let rows, error;
+    let keyQL = new KeyQL([]);
+    try {
+      rows = keyQL.query().select([]).order([{}]);
+    } catch (e) {
+      error = e;
+    }
+    expect(error).to.exist;
+  });
+
   it ('Should throw an error when an non-string order field is provided', () => {
     let rows, error;
     let keyQL = new KeyQL([]);
     try {
-      rows = keyQL.query().select([]).order({field: true});
+      rows = keyQL.query().select([]).order([{field: true}]);
     } catch (e) {
       error = e;
     }
@@ -207,7 +207,7 @@ describe('KeyQL Setup Tests', () => {
     let rows, error;
     let keyQL = new KeyQL([]);
     try {
-      rows = keyQL.query().select([]).order({sort: '?'});
+      rows = keyQL.query().select([]).order([{sort: '?'}]);
     } catch (e) {
       error = e;
     }
@@ -218,7 +218,7 @@ describe('KeyQL Setup Tests', () => {
     let rows, error;
     let keyQL = new KeyQL([]);
     try {
-      rows = keyQL.query().select([]).order({INVALID: 10});
+      rows = keyQL.query().select([]).order([{INVALID: 10}]);
     } catch (e) {
       error = e;
     }
@@ -909,7 +909,7 @@ describe('KeyQL Order Tests', () => {
 
   it('Should order by name field ASC with no value set', () => {
 
-    let rows = SHEETS.query().order({field: 'name'}).values();
+    let rows = SHEETS.query().order([{field: 'name'}]).values();
 
     expect(rows[0].fields.name).to.equal('Alice');
     expect(rows[1].fields.name).to.equal('Bernard');
@@ -920,7 +920,7 @@ describe('KeyQL Order Tests', () => {
 
   it('Should order by name field ASC with a value set', () => {
 
-    let rows = SHEETS.query().order({field: 'name', sort: 'ASC'}).values();
+    let rows = SHEETS.query().order([{field: 'name', sort: 'ASC'}]).values();
 
     expect(rows[0].fields.name).to.equal('Alice');
     expect(rows[1].fields.name).to.equal('Bernard');
@@ -931,7 +931,7 @@ describe('KeyQL Order Tests', () => {
 
   it('Should order by name field DESC with a value set', () => {
 
-    let rows = SHEETS.query().order({field: 'name', sort: 'DESC'}).values();
+    let rows = SHEETS.query().order([{field: 'name', sort: 'DESC'}]).values();
 
     expect(rows[0].fields.name).to.equal('Jason');
     expect(rows[1].fields.name).to.equal('Isabelle');

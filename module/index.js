@@ -102,28 +102,35 @@ class KeyQL  {
   }
 
   static validateOrder (keyQLOrder, validFields = []) {
-    if (!keyQLOrder || typeof keyQLOrder !== 'object' || Array.isArray(keyQLOrder)) {
+    if (!Array.isArray(keyQLOrder)) {
+      throw new Error('KeyQL Order must be a valid array');
+    }
+    return keyQLOrder.map(keyQLOrderObject => this.validateOrderObject(keyQLOrderObject));
+  }
+
+  static validateOrderObject (keyQLOrderObject, validFields = []) {
+    if (!keyQLOrderObject || typeof keyQLOrderObject !== 'object' || Array.isArray(keyQLOrderObject)) {
       throw new Error('KeyQL Order object must be a valid object');
     }
-    keyQLOrder = Object.keys(keyQLOrder).reduce((order, key) => {
-      order[key] = keyQLOrder[key];
+    keyQLOrderObject = Object.keys(keyQLOrderObject).reduce((order, key) => {
+      order[key] = keyQLOrderObject[key];
       return order;
     }, {});
-    if (!keyQLOrder.hasOwnProperty('sort')) {
-      keyQLOrder.sort = 'ASC';
+    if (!keyQLOrderObject.hasOwnProperty('sort')) {
+      keyQLOrderObject.sort = 'ASC';
     }
-    if (!keyQLOrder.hasOwnProperty('field')) {
+    if (!keyQLOrderObject.hasOwnProperty('field')) {
       throw new Error('KeyQL Order object must have a "field" property');
-    } else if (typeof keyQLOrder.field !== 'string') {
+    } else if (typeof keyQLOrderObject.field !== 'string') {
       throw new Error('KeyQL Order "field" property must be a string');
-    } else if (!{'ASC': true, 'DESC': true}[keyQLOrder.sort]) {
+    } else if (!{'ASC': true, 'DESC': true}[keyQLOrderObject.sort]) {
       throw new Error('KeyQL Order "sort" property must be "ASC" or "DESC"');
-    } else if (Object.keys(keyQLOrder).length > 2) {
+    } else if (Object.keys(keyQLOrderObject).length > 2) {
       throw new Error('KeyQL Order object must only contain "field" and "sort" properties');
-    } else if (validFields.length && validFields.indexOf(keyQLOrder.field) === -1) {
-      throw new Error(`KeyQL Order "field" property invalid: "${keyQLOrder.field}", valid fields are "${validFields.join('", "')}"`);
+    } else if (validFields.length && validFields.indexOf(keyQLOrderObject.field) === -1) {
+      throw new Error(`KeyQL Order "field" property invalid: "${keyQLOrderObject.field}", valid fields are "${validFields.join('", "')}"`);
     }
-    return keyQLOrder;
+    return keyQLOrderObject;
   }
 
   static validateMapFunction (mapFunction) {
