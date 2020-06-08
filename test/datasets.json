@@ -153,6 +153,14 @@
         "birthdate": "09/20/1988",
         "pets": "1"
       }
+    },
+    {
+      "id": 11,
+      "fields": {
+        "name": null,
+        "birthday": "01/01/1970",
+        "pets": "100"
+      }
     }
   ]
 }

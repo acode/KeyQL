@@ -38,14 +38,14 @@ class KeyQL  {
     return fields;
   }
 
-  static validateQuery (keyQLQuery, validKeys = [], operators = KeyQL.OPERATORS) {
+  static validateQuery (keyQLQuery, validFields = [], operators = KeyQL.OPERATORS) {
     if (!Array.isArray(keyQLQuery)) {
       throw new Error('KeyQL Query must be a valid array');
     }
-    return keyQLQuery.map(keyQLQueryObject => this.validateQueryObject(keyQLQueryObject, validKeys, operators));
+    return keyQLQuery.map(keyQLQueryObject => this.validateQueryObject(keyQLQueryObject, validFields, operators));
   }
 
-  static validateQueryObject (keyQLQueryObject, validKeys = [], operators = KeyQL.OPERATORS) {
+  static validateQueryObject (keyQLQueryObject, validFields = [], operators = KeyQL.OPERATORS) {
     if (!keyQLQueryObject || typeof keyQLQueryObject !== 'object') {
       throw new Error('KeyQL Query Object must be a valid object');
     }
@@ -61,8 +61,8 @@ class KeyQL  {
         throw new Error(`Unavailable KeyQL Operator: "${operator}"`);
       }
       var parsedKey = blocks.join('__');
-      if (validKeys.length && validKeys.indexOf(parsedKey) === -1) {
-        throw new Error(`Invalid KeyQL Key: "${parsedKey}", valid keys are "${validKeys.join('", "')}"`);
+      if (validFields.length && validFields.indexOf(parsedKey) === -1) {
+        throw new Error(`Invalid KeyQL Query object field: "${parsedKey}", valid fields are "${validFields.join('", "')}"`);
       }
       return {
         key: parsedKey,
@@ -101,6 +101,31 @@ class KeyQL  {
     return keyQLLimit;
   }
 
+  static validateOrder (keyQLOrder, validFields = []) {
+    if (!keyQLOrder || typeof keyQLOrder !== 'object' || Array.isArray(keyQLOrder)) {
+      throw new Error('KeyQL Order object must be a valid object');
+    }
+    keyQLOrder = Object.keys(keyQLOrder).reduce((order, key) => {
+      order[key] = keyQLOrder[key];
+      return order;
+    }, {});
+    if (!keyQLOrder.hasOwnProperty('sort')) {
+      keyQLOrder.sort = 'ASC';
+    }
+    if (!keyQLOrder.hasOwnProperty('field')) {
+      throw new Error('KeyQL Order object must have a "field" property');
+    } else if (typeof keyQLOrder.field !== 'string') {
+      throw new Error('KeyQL Order "field" property must be a string');
+    } else if (!{'ASC': true, 'DESC': true}[keyQLOrder.sort]) {
+      throw new Error('KeyQL Order "sort" property must be "ASC" or "DESC"');
+    } else if (Object.keys(keyQLOrder).length > 2) {
+      throw new Error('KeyQL Order object must only contain "field" and "sort" properties');
+    } else if (validFields.length && validFields.indexOf(keyQLOrder.field) === -1) {
+      throw new Error(`KeyQL Order "field" property invalid: "${keyQLOrder.field}", valid fields are "${validFields.join('", "')}"`);
+    }
+    return keyQLOrder;
+  }
+
   static validateMapFunction (mapFunction) {
     if (typeof mapFunction !== 'function') {
       throw new Error('KeyQL mapFunction must be a valid function');
@@ -108,13 +133,13 @@ class KeyQL  {
     return mapFunction;
   }
 
-  static translate (keyQLQuery, language, validKeys = []) {
+  static translate (keyQLQuery, language, validFields = []) {
     if (!(language in KeyQL.TRANSLATORS)) {
       throw new Error(`Invalid KeyQL Translator: "${language}"`);
     }
     let translator = KeyQL.TRANSLATORS[language];
     return translator.translate(
-      KeyQL.validateQuery(keyQLQuery, validKeys, translator.operators),
+      KeyQL.validateQuery(keyQLQuery, validFields, translator.operators),
       translator.operators
     );
   };
@@ -167,6 +192,56 @@ class KeyQL  {
 
   rows () {
     return this._rows.slice();
+  }
+
+  sort (keyQLOrder, a, b) {
+    var val = {'DESC': -1, 'ASC': 1}[keyQLOrder.sort];
+    var a__uniq = a.__keyqlid__;
+    var b__uniq = b.__keyqlid__;
+    a = a[keyQLOrder.field];
+    b = b[keyQLOrder.field];
+    if(a === b) { return a__uniq > b__uniq ? (val) : -(val); }
+    if(a === undefined) { return 1; }
+    if(b === undefined) { return -1; }
+    if(a === null) { return 1; }
+    if(b === null) { return -1; }
+    if(typeof a === 'function') {
+      if(typeof b === 'function') { return a__uniq > b__uniq ? (val) : -(val); }
+      return -1;
+    }
+    if(typeof a === 'object') {
+      if(typeof b === 'function') { return 1; }
+      if(typeof b === 'object') {
+        if(a instanceof Date && b instanceof Date) {
+          return a.valueOf() > b.valueOf() ? (val) : -(val);
+        }
+        if(a instanceof Date) { return 1; }
+        if(b instanceof Date) { return -1; }
+        return a__uniq > b__uniq ? (val) : -(val);
+      }
+      return -1;
+    }
+    if(typeof a === 'string') {
+      if(typeof b === 'function') { return 1; }
+      if(typeof b === 'object') { return 1; }
+      if(typeof b === 'string') { return a > b ? (val) : -(val); }
+      return -1;
+    }
+    if(typeof a === 'boolean') {
+      if(typeof b === 'boolean') { return a > b ? (val) : -(val); }
+      if(typeof b === 'number') { return -1; }
+      return 1;
+    }
+    if(typeof a === 'number') {
+      if(typeof b === 'number') {
+        if(isNaN(a) && isNaN(b)) { return a__uniq > b__uniq ? (val) : -(val); }
+        if(isNaN(a)) { return 1; }
+        if(isNaN(b)) { return -1; }
+        return a > b ? (val) : -(val);
+      }
+      return 1;
+    }
+    return a__uniq > b__uniq ? (val) : -(val);
   }
 
 }

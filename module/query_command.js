@@ -30,6 +30,18 @@ class KeyQLQueryCommand {
     );
   }
 
+  order (keyQLOrder = {field: null, sort: 'ASC'}) {
+    let order = this.keyQL.constructor.validateOrder(keyQLOrder);
+    return new this.constructor(
+      this.keyQL,
+      this,
+      {
+        type: 'order',
+        value: order
+      }
+    );
+  }
+
   values () {
     return this.__query__().map(row => this.keyQL._dataset[row.__keyqlid__]);
   }
@@ -60,6 +72,14 @@ class KeyQLQueryCommand {
 
   __executeCommand__ (rows, command) {
     switch (command.type) {
+      case 'order':
+        return rows.sort(
+          this.keyQL.sort.bind(
+            this.keyQL,
+            command.value
+          )
+        );
+        break;
       case 'select':
         return rows.filter(row => this.__selectMapFunction__(command.value, row));
         break;
