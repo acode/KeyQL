@@ -71,6 +71,18 @@
       "lives_remaining": 1,
       "alliances": ["Stark"],
       "bio": "Arya Stark was the third child of Eddard Stark and Catelyn Stark."
+    },
+    {
+      "id": 7,
+      "first_name": "Night",
+      "last_name": "King",
+      "gender": "?",
+      "age": 9999,
+      "location": null,
+      "is_sean_bean": false,
+      "lives_remaining": 0,
+      "alliances": null,
+      "bio": "The Night King"
     }
   ],
   "spreadsheet": [

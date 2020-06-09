@@ -114,7 +114,11 @@ class KeyQLQueryCommand {
     for (let i = 0; i < keyQLQueryEntry.length; i++) {
       let statement = keyQLQueryEntry[i];
       let result;
-      result = statement.compare(row[statement.key], statement.value)
+      try {
+        result = statement.compare(row[statement.key], statement.value);
+      } catch (e) {
+        return false;
+      }
       if (!result) {
         return false;
       }

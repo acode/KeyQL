@@ -1,6 +1,6 @@
 {
   "name": "keyql",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A language for querying datasets using key-value pairs",
   "main": "module/index.js",
   "scripts": {

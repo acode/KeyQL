@@ -10,7 +10,7 @@ module.exports = {
   'lt': (a, b) => a < b,
   'gte': (a, b) => a >= b,
   'lte': (a, b) => a <= b,
-  'icontains': (a, b) => a.toLowerCase().indexOf(b.toLowerCase()) > -1,
+  'icontains': (a, b) => (Array.isArray(a) ? a.map(v => v.toLowerCase()) : a.toLowerCase()).indexOf(b.toLowerCase()) > -1,
   'contains': (a, b) => a.indexOf(b) > -1,
   'startswith': (a, b) => a.startsWith(b),
   'istartswith': (a, b) => a.toLowerCase().startsWith(b.toLowerCase()),

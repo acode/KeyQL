@@ -266,30 +266,33 @@ describe('KeyQL Operator Tests', () => {
   it('Should select query with "not" operator', () => {
 
     let rows = GOT.query().select([{last_name__not: 'Snow'}]).values();
-    expect(rows.length).to.equal(4);
+    expect(rows.length).to.equal(5);
     expect(rows[0].last_name).to.equal('Stark');
     expect(rows[1].last_name).to.equal('Stark');
     expect(rows[2].last_name).to.equal('Bolton');
     expect(rows[3].last_name).to.equal('Stark');
+    expect(rows[4].last_name).to.equal('King');
 
   });
 
   it('Should select query with "gt" operator', () => {
 
     let rows = GOT.query().select([{age__gt: 33}]).values();
-    expect(rows.length).to.equal(2);
+    expect(rows.length).to.equal(3);
     expect(rows[0].age).to.be.gt(33);
     expect(rows[1].age).to.be.gt(33);
+    expect(rows[2].age).to.be.gt(33);
 
   });
 
   it('Should select query with "gte" operator', () => {
 
     let rows = GOT.query().select([{age__gte: 33}]).values();
-    expect(rows.length).to.equal(3);
+    expect(rows.length).to.equal(4);
     expect(rows[0].age).to.be.gte(33);
     expect(rows[1].age).to.be.gte(33);
     expect(rows[2].age).to.be.gte(33);
+    expect(rows[3].age).to.be.gte(33);
 
   });
 
@@ -323,6 +326,17 @@ describe('KeyQL Operator Tests', () => {
 
   });
 
+  it('Should select query with "icontains" operator from array', () => {
+
+    let rows = GOT.query().select([{alliances__icontains: 'stark'}]).values();
+    expect(rows.length).to.equal(4);
+    expect(rows[0].alliances).to.contain('Stark');
+    expect(rows[1].alliances).to.contain('Stark');
+    expect(rows[2].alliances).to.contain('Stark');
+    expect(rows[3].alliances).to.contain('Stark');
+
+  });
+
   it('Should select query with "contains" operator', () => {
 
     let rows = GOT.query().select([{location__contains: 'dread'}]).values();
@@ -332,6 +346,20 @@ describe('KeyQL Operator Tests', () => {
     expect(rows.length).to.equal(2);
     expect(rows[0].location).to.equal('Dreadfort');
     expect(rows[1].location).to.equal('Dreadfort');
+
+  });
+
+  it('Should select query with "contains" operator from array', () => {
+
+    let rows = GOT.query().select([{alliances__contains: 'stark'}]).values();
+    expect(rows.length).to.equal(0);
+
+    rows = GOT.query().select([{alliances__contains: 'Stark'}]).values();
+    expect(rows.length).to.equal(4);
+    expect(rows[0].alliances).to.contain('Stark');
+    expect(rows[1].alliances).to.contain('Stark');
+    expect(rows[2].alliances).to.contain('Stark');
+    expect(rows[3].alliances).to.contain('Stark');
 
   });
 
@@ -455,12 +483,13 @@ describe('KeyQL Operator Tests', () => {
   it('Should select query with "not_null" operator', () => {
 
     let rows = GOT.query().select([{lives_remaining__not_null: true}]).values();
-    expect(rows.length).to.equal(5);
+    expect(rows.length).to.equal(6);
     expect(rows[0].lives_remaining).to.not.equal(null);
     expect(rows[1].lives_remaining).to.not.equal(null);
     expect(rows[2].lives_remaining).to.not.equal(null);
     expect(rows[3].lives_remaining).to.not.equal(null);
     expect(rows[4].lives_remaining).to.not.equal(null);
+    expect(rows[5].lives_remaining).to.not.equal(null);
 
   });
 
@@ -475,21 +504,25 @@ describe('KeyQL Operator Tests', () => {
   it('Should select query with "not_true" operator', () => {
 
     let rows = GOT.query().select([{is_sean_bean__not_true: true}]).values();
-    expect(rows.length).to.equal(5);
+    expect(rows.length).to.equal(6);
     expect(rows[0].is_sean_bean).to.not.equal(true);
     expect(rows[1].is_sean_bean).to.not.equal(true);
     expect(rows[2].is_sean_bean).to.not.equal(true);
     expect(rows[3].is_sean_bean).to.not.equal(true);
     expect(rows[4].is_sean_bean).to.not.equal(true);
+    expect(rows[5].is_sean_bean).to.not.equal(true);
 
   });
 
   it('Should select query with "is_false" operator', () => {
 
     let rows = GOT.query().select([{is_sean_bean__is_false: true}]).values();
-    expect(rows.length).to.equal(3);
+    expect(rows.length).to.equal(4);
     expect(rows[0].is_sean_bean).to.equal(false);
     expect(rows[1].is_sean_bean).to.equal(false);
+    expect(rows[2].is_sean_bean).to.equal(false);
+    expect(rows[3].is_sean_bean).to.equal(false);
+
 
   });
 
@@ -515,11 +548,12 @@ describe('KeyQL Operator Tests', () => {
   it('Should select query with "not_in" operator', () => {
 
     let rows = GOT.query().select([{first_name__not_in: ['Arya', 'Jon']}]).values();
-    expect(rows.length).to.equal(4);
+    expect(rows.length).to.equal(5);
     expect(rows[0].first_name).to.not.be.oneOf(['Arya', 'Jon']);
     expect(rows[1].first_name).to.not.be.oneOf(['Arya', 'Jon']);
     expect(rows[2].first_name).to.not.be.oneOf(['Arya', 'Jon']);
     expect(rows[3].first_name).to.not.be.oneOf(['Arya', 'Jon']);
+    expect(rows[4].first_name).to.not.be.oneOf(['Arya', 'Jon']);
 
   });
 
