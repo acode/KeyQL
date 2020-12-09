@@ -13,11 +13,27 @@ const formatValue = (value) => {
   } else if (!value) {
     return `BLANK()`;
   } else if (moment.isMoment(value)) {
-    return `'${value.toISOString()}'`;
+    return `DATETIME_PARSE('${value.toISOString()}')`;
   } else {
     return `'${value.toString().replace(/'/g, '\'&"\'"&\'')}'`;
   }
 };
+
+const dateLt = (a, b) => {
+  return `IS_BEFORE(${a},${b})`;
+}
+
+const dateLte = (a, b) => {
+  return `OR(IS_BEFORE(${a},${b}),IS_SAME(${a},${b}))`;
+};
+
+const dateGt = (a, b) => {
+  return `IS_AFTER(${a},${b})`;
+}
+
+const dateGte = (a, b) => {
+  return `OR(IS_AFTER(${a},${b}),IS_SAME(${a},${b}))`;
+}
 
 module.exports = {
   'is': (a, b) => `${formatKey(a)}=${formatValue(b)}`,
@@ -72,7 +88,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `AND(${formatKey(a)}>${formatValue(cutOff)},${formatKey(a)}<=${formatValue(nowUTC)})`;
+    return `AND(${dateGt(formatKey(a),formatValue(cutOff))},${dateLte(formatKey(a),formatValue(nowUTC))})`;
   },
   'recency_lte': (a, b) => {
     let nowUTC = moment.utc(moment.now());
@@ -82,7 +98,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `AND(${formatKey(a)}>=${formatValue(cutOff)},${formatKey(a)}<=${formatValue(nowUTC)})`;
+    return `AND(${dateGte(formatKey(a),formatValue(cutOff))},${dateLte(formatKey(a),formatValue(nowUTC))})`;
   },
   'recency_gt': (a, b) => {
     let nowUTC = moment.utc(moment.now());
@@ -92,7 +108,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `${formatKey(a)}<${formatValue(cutOff)}`;
+    return `${dateLt(formatKey(a),formatValue(cutOff))}`;
   },
   'recency_gte': (a, b) => {
     let nowUTC = moment.utc(moment.now());
@@ -102,7 +118,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `${formatKey(a)}<=${formatValue(cutOff)}`;
+    return `${dateLte(formatKey(a),formatValue(cutOff))}`;
   },
   'upcoming_lt': (a, b) => {
     let nowUTC = moment.utc(moment.now());
@@ -112,7 +128,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `AND(${formatKey(a)}>=${formatValue(nowUTC)},${formatKey(a)}<${formatValue(cutOff)})`;
+    return `AND(${dateGte(formatKey(a),formatValue(nowUTC))},${dateLt(formatKey(a),formatValue(cutOff))})`;
   },
   'upcoming_lte': (a, b) => {
     let nowUTC = moment.utc(moment.now());
@@ -122,7 +138,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `AND(${formatKey(a)}>=${formatValue(nowUTC)},${formatKey(a)}<=${formatValue(cutOff)})`;
+    return `AND(${dateGte(formatKey(a),formatValue(nowUTC))},${dateLte(formatKey(a),formatValue(cutOff))})`;
   },
   'upcoming_gt': (a, b) => {
     let nowUTC = moment.utc(moment.now());
@@ -132,7 +148,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `${formatKey(a)}>${formatValue(cutOff)}`;
+    return `${dateGt(formatKey(a),formatValue(cutOff))}`;
   },
   'upcoming_gte': (a, b) => {
     let nowUTC = moment.utc(moment.now());
@@ -142,7 +158,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `${formatKey(a)}>=${formatValue(cutOff)}`;
+    return `${dateGte(formatKey(a),formatValue(cutOff))}`;
   },
   'date_lt': (a, b) => {
     let date;
@@ -151,7 +167,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `${formatKey(a)}<${formatValue(date)}`;
+    return `${dateLt(formatKey(a),formatValue(date))}`;
   },
   'date_lte': (a, b) => {
     let date;
@@ -160,7 +176,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `${formatKey(a)}<=${formatValue(date)}`;
+    return `${dateLte(formatKey(a),formatValue(date))}`;
   },
   'date_gt': (a, b) => {
     let date;
@@ -169,7 +185,7 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `${formatKey(a)}>${formatValue(date)}`;
+    return `${dateGt(formatKey(a),formatValue(date))}`;
   },
   'date_gte': (a, b) => {
     let date;
@@ -178,6 +194,6 @@ module.exports = {
     } catch (e) {
       return 'BLANK()';
     }
-    return `${formatKey(a)}>=${formatValue(date)}`;
+    return `${dateGte(formatKey(a),formatValue(date))}`;
   }
 };

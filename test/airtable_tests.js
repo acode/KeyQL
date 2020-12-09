@@ -320,7 +320,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let twoHoursAgo = moment(nowUTC).subtract(2, 'hours');
 
     translation = KeyQL.translate([{created_at__recency_lt: secondsInTwoHours}], language);
-    expect(translation).to.equal(`OR(AND(AND({created_at}>'${twoHoursAgo.toISOString()}',{created_at}<='${nowUTC.toISOString()}')))`);
+    expect(translation).to.equal(`OR(AND(AND(IS_AFTER({created_at},DATETIME_PARSE('${twoHoursAgo.toISOString()}')),OR(IS_BEFORE({created_at},DATETIME_PARSE('${nowUTC.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${nowUTC.toISOString()}'))))))`);
 
   });
 
@@ -332,7 +332,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let twoHoursAgo = moment(nowUTC).subtract(2, 'hours');
 
     translation = KeyQL.translate([{created_at__recency_lte: secondsInTwoHours}], language);
-    expect(translation).to.equal(`OR(AND(AND({created_at}>='${twoHoursAgo.toISOString()}',{created_at}<='${nowUTC.toISOString()}')))`);
+    expect(translation).to.equal(`OR(AND(AND(OR(IS_AFTER({created_at},DATETIME_PARSE('${twoHoursAgo.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${twoHoursAgo.toISOString()}'))),OR(IS_BEFORE({created_at},DATETIME_PARSE('${nowUTC.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${nowUTC.toISOString()}'))))))`);
 
   });
 
@@ -344,7 +344,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let twoHoursAgo = moment(nowUTC).subtract(2, 'hours');
 
     translation = KeyQL.translate([{created_at__recency_gt: secondsInTwoHours}], language);
-    expect(translation).to.equal(`OR(AND({created_at}<'${twoHoursAgo.toISOString()}'))`);
+    expect(translation).to.equal(`OR(AND(IS_BEFORE({created_at},DATETIME_PARSE('${twoHoursAgo.toISOString()}'))))`);
 
   });
 
@@ -356,7 +356,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let twoHoursAgo = moment(nowUTC).subtract(2, 'hours');
 
     translation = KeyQL.translate([{created_at__recency_gte: secondsInTwoHours}], language);
-    expect(translation).to.equal(`OR(AND({created_at}<='${twoHoursAgo.toISOString()}'))`);
+    expect(translation).to.equal(`OR(AND(OR(IS_BEFORE({created_at},DATETIME_PARSE('${twoHoursAgo.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${twoHoursAgo.toISOString()}')))))`);
 
   });
 
@@ -368,7 +368,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let twoHoursFromNow = moment(nowUTC).add(2, 'hours');
 
     translation = KeyQL.translate([{created_at__upcoming_lt: secondsInTwoHours}], language);
-    expect(translation).to.equal(`OR(AND(AND({created_at}>='${nowUTC.toISOString()}',{created_at}<'${twoHoursFromNow.toISOString()}')))`);
+    expect(translation).to.equal(`OR(AND(AND(OR(IS_AFTER({created_at},DATETIME_PARSE('${nowUTC.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${nowUTC.toISOString()}'))),IS_BEFORE({created_at},DATETIME_PARSE('${twoHoursFromNow.toISOString()}')))))`);
 
   });
 
@@ -380,7 +380,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let twoHoursFromNow = moment(nowUTC).add(2, 'hours');
 
     translation = KeyQL.translate([{created_at__upcoming_lte: secondsInTwoHours}], language);
-    expect(translation).to.equal(`OR(AND(AND({created_at}>='${nowUTC.toISOString()}',{created_at}<='${twoHoursFromNow.toISOString()}')))`);
+    expect(translation).to.equal(`OR(AND(AND(OR(IS_AFTER({created_at},DATETIME_PARSE('${nowUTC.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${nowUTC.toISOString()}'))),OR(IS_BEFORE({created_at},DATETIME_PARSE('${twoHoursFromNow.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${twoHoursFromNow.toISOString()}'))))))`);
 
   });
 
@@ -392,7 +392,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let twoHoursFromNow = moment(nowUTC).add(2, 'hours');
 
     translation = KeyQL.translate([{created_at__upcoming_gt: secondsInTwoHours}], language);
-    expect(translation).to.equal(`OR(AND({created_at}>'${twoHoursFromNow.toISOString()}'))`);
+    expect(translation).to.equal(`OR(AND(IS_AFTER({created_at},DATETIME_PARSE('${twoHoursFromNow.toISOString()}'))))`);
 
   });
 
@@ -404,7 +404,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let twoHoursFromNow = moment(nowUTC).add(2, 'hours');
 
     translation = KeyQL.translate([{created_at__upcoming_gte: secondsInTwoHours}], language);
-    expect(translation).to.equal(`OR(AND({created_at}>='${twoHoursFromNow.toISOString()}'))`);
+    expect(translation).to.equal(`OR(AND(OR(IS_AFTER({created_at},DATETIME_PARSE('${twoHoursFromNow.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${twoHoursFromNow.toISOString()}')))))`);
 
   });
 
@@ -413,10 +413,10 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let translation;
 
     translation = KeyQL.translate([{created_at__date_lt: '2020-05-18T19:13:00.000Z'}], language);
-    expect(translation).to.equal(`OR(AND({created_at}<'2020-05-18T19:13:00.000Z'))`);
+    expect(translation).to.equal(`OR(AND(IS_BEFORE({created_at},DATETIME_PARSE('2020-05-18T19:13:00.000Z'))))`);
 
     translation = KeyQL.translate([{created_at__date_lt: new Date('2020-04-06T10:25:49-07:00')}], language);
-    expect(translation).to.equal(`OR(AND({created_at}<'2020-04-06T17:25:49.000Z'))`);
+    expect(translation).to.equal(`OR(AND(IS_BEFORE({created_at},DATETIME_PARSE('2020-04-06T17:25:49.000Z'))))`);
 
   });
 
@@ -425,10 +425,10 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let translation;
 
     translation = KeyQL.translate([{created_at__date_lte: '2020-05-18T19:13:00.000Z'}], language);
-    expect(translation).to.equal(`OR(AND({created_at}<='2020-05-18T19:13:00.000Z'))`);
+    expect(translation).to.equal(`OR(AND(OR(IS_BEFORE({created_at},DATETIME_PARSE('2020-05-18T19:13:00.000Z')),IS_SAME({created_at},DATETIME_PARSE('2020-05-18T19:13:00.000Z')))))`);
 
     translation = KeyQL.translate([{created_at__date_lte: new Date('2020-04-06T10:25:49-07:00')}], language);
-    expect(translation).to.equal(`OR(AND({created_at}<='2020-04-06T17:25:49.000Z'))`);
+    expect(translation).to.equal(`OR(AND(OR(IS_BEFORE({created_at},DATETIME_PARSE('2020-04-06T17:25:49.000Z')),IS_SAME({created_at},DATETIME_PARSE('2020-04-06T17:25:49.000Z')))))`);
 
   });
 
@@ -437,10 +437,10 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let translation;
 
     translation = KeyQL.translate([{created_at__date_gt: '2020-05-18T19:13:00Z'}], language);
-    expect(translation).to.equal(`OR(AND({created_at}>'2020-05-18T19:13:00.000Z'))`);
+    expect(translation).to.equal(`OR(AND(IS_AFTER({created_at},DATETIME_PARSE('2020-05-18T19:13:00.000Z'))))`);
 
     translation = KeyQL.translate([{created_at__date_gt: new Date('2020-04-06T10:25:49-07:00')}], language);
-    expect(translation).to.equal(`OR(AND({created_at}>'2020-04-06T17:25:49.000Z'))`);
+    expect(translation).to.equal(`OR(AND(IS_AFTER({created_at},DATETIME_PARSE('2020-04-06T17:25:49.000Z'))))`);
 
   });
 
@@ -449,10 +449,10 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let translation;
 
     translation = KeyQL.translate([{created_at__date_gte: '2020-05-18T19:13:00.000Z'}], language);
-    expect(translation).to.equal(`OR(AND({created_at}>='2020-05-18T19:13:00.000Z'))`);
+    expect(translation).to.equal(`OR(AND(OR(IS_AFTER({created_at},DATETIME_PARSE('2020-05-18T19:13:00.000Z')),IS_SAME({created_at},DATETIME_PARSE('2020-05-18T19:13:00.000Z')))))`);
 
     translation = KeyQL.translate([{created_at__date_gte: new Date('2020-04-06T10:25:49-07:00')}], language);
-    expect(translation).to.equal(`OR(AND({created_at}>='2020-04-06T17:25:49.000Z'))`);
+    expect(translation).to.equal(`OR(AND(OR(IS_AFTER({created_at},DATETIME_PARSE('2020-04-06T17:25:49.000Z')),IS_SAME({created_at},DATETIME_PARSE('2020-04-06T17:25:49.000Z')))))`);
 
   });
 
@@ -476,7 +476,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     expect(translation).to.equal(`OR(AND({title}='T-Shirt'),AND({title}!='Jeans'),AND({title}!='Shoes'))`);
 
     translation = KeyQL.translate([{title: 'T-Shirt', price__lt: 99.99}, {title__not: 'Jeans', is_price_reduced__is_true: true}, {title__not: 'Shoes', created_at__recency_lte: secondsInTwoHours }], language);
-    expect(translation).to.equal(`OR(AND({title}='T-Shirt',{price}<'99.99'),AND({title}!='Jeans',{is_price_reduced}=TRUE()),AND({title}!='Shoes',AND({created_at}>='${twoHoursAgo.toISOString()}',{created_at}<='${nowUTC.toISOString()}')))`);
+    expect(translation).to.equal(`OR(AND({title}='T-Shirt',{price}<'99.99'),AND({title}!='Jeans',{is_price_reduced}=TRUE()),AND({title}!='Shoes',AND(OR(IS_AFTER({created_at},DATETIME_PARSE('${twoHoursAgo.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${twoHoursAgo.toISOString()}'))),OR(IS_BEFORE({created_at},DATETIME_PARSE('${nowUTC.toISOString()}')),IS_SAME({created_at},DATETIME_PARSE('${nowUTC.toISOString()}'))))))`);
 
     translation = KeyQL.translate([
       {
