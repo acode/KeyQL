@@ -5,9 +5,9 @@ const KeyQL = require('../module/index.js');
 
 const mockDateMs = 1607471504386;
 
-describe('KeyQL to AirtableQL Translation Tests', () => {
+describe('KeyQL to AirtableFormula Translation Tests', () => {
 
-  let language = 'AirtableQL';
+  let language = 'AirtableFormula';
   let originalMomentNow;
 
   beforeEach(function () {

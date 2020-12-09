@@ -9,8 +9,8 @@ module.exports = {
       }).join(') OR (') + ')';
     }
   },
-  AirtableQL: {
-    operators: require('./languages/AirtableQL.js'),
+  AirtableFormula: {
+    operators: require('./languages/AirtableFormula.js'),
     translate: (keyQLQuery, operators) => {
       return 'OR(' + keyQLQuery.map(queryObj => {
         return 'AND(' + queryObj.map(entry => {
