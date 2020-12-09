@@ -233,7 +233,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let translation;
 
     translation = KeyQL.translate([{email__is_null: true}], language);
-    expect(translation).to.equal('OR(AND({email}=BLANK()))');
+    expect(translation).to.equal(`OR(AND(OR({email}=BLANK(),{email}='')))`);
 
   });
 
@@ -242,7 +242,7 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     let translation;
 
     translation = KeyQL.translate([{email__not_null: true}], language);
-    expect(translation).to.equal('OR(AND({email}!=BLANK()))');
+    expect(translation).to.equal(`OR(AND(AND({email}!=BLANK(),{email}!='')))`);
 
   });
 

@@ -56,10 +56,10 @@ module.exports = {
     }
     return `LOWER(RIGHT(${formatKey(a)},${b.toString().length}))=LOWER(${formatValue(b)})`;
   },
-  'is_null': (a, b) => `${formatKey(a)}=BLANK()`,
+  'is_null': (a, b) => `OR(${formatKey(a)}=BLANK(),${formatKey(a)}='')`,
   'is_true': (a, b) => `${formatKey(a)}=TRUE()`,
   'is_false': (a, b) => `${formatKey(a)}=FALSE()`,
-  'not_null': (a, b) => `${formatKey(a)}!=BLANK()`,
+  'not_null': (a, b) => `AND(${formatKey(a)}!=BLANK(),${formatKey(a)}!='')`,
   'not_true': (a, b) => `${formatKey(a)}!=TRUE()`,
   'not_false': (a, b) => `${formatKey(a)}!=FALSE()`,
   'in': (a, b) => `OR(${b.map(elem => `${formatKey(a)}=${formatValue(elem)}`).join(',')})`,
