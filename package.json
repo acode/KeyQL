@@ -1,10 +1,10 @@
 {
   "name": "keyql",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A language for querying datasets using key-value pairs",
   "main": "module/index.js",
   "scripts": {
-    "test": "mocha ./test/tests.js"
+    "test": "mocha ./test/*tests.js"
   },
   "author": "Keith Horwood <keithwhor@gmail.com>",
   "license": "MIT",
