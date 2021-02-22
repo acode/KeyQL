@@ -18,5 +18,20 @@ module.exports = {
         }).join(',') + ')';
       }).join(',') + ')';
     }
+  },
+  HeightFilter: {
+    operators: require('./languages/HeightFilter.js'),
+    translate: (keyQLQuery, operators) => {
+      let filter = {
+        "or": keyQLQuery.map(queryObj => {
+          return {
+            "and": queryObj.map(entry => {
+              return operators[entry.operator](entry.key, entry.value);
+            })
+          }
+        })
+      }
+      return JSON.stringify(filter);
+    }
   }
 };
