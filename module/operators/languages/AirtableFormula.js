@@ -78,8 +78,20 @@ module.exports = {
   'not_null': (a, b) => `AND(${formatKey(a)}!=BLANK(),${formatKey(a)}!='')`,
   'not_true': (a, b) => `${formatKey(a)}!=TRUE()`,
   'not_false': (a, b) => `${formatKey(a)}!=FALSE()`,
-  'in': (a, b) => `OR(${b.map(elem => `${formatKey(a)}=${formatValue(elem)}`).join(',')})`,
-  'not_in': (a, b) => `AND(${b.map(elem => `${formatKey(a)}!=${formatValue(elem)}`).join(',')})`,
+  'in': (a, b) => {
+    if (typeof b === 'string') {
+      return `AND(T(${formatKey(a)}),SEARCH(${formatKey(a)},${formatValue(b)}))`;
+    } else {
+      return `OR(${b.map(elem => `${formatKey(a)}=${formatValue(elem)}`).join(',')})`;
+    }
+  },
+  'not_in': (a, b) => {
+    if (typeof b === 'string') {
+      return `OR(NOT(T(${formatKey(a)})),NOT(SEARCH(${formatKey(a)},${formatValue(b)})))`;
+    } else {
+      return `AND(${b.map(elem => `${formatKey(a)}!=${formatValue(elem)}`).join(',')})`;
+    }
+  },
   'recency_lt': (a, b) => {
     let nowUTC = moment.utc(moment.now());
     let cutOff;

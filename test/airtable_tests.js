@@ -295,6 +295,9 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
     translation = KeyQL.translate([{Title__in: []}], language);
     expect(translation).to.equal('OR(AND(OR()))');
 
+    translation = KeyQL.translate([{Title__in: 'T-Shirt'}], language);
+    expect(translation).to.equal(`OR(AND(AND(T({Title}),SEARCH({Title},'T-Shirt'))))`);
+
   });
 
   it('Should translate query with "not_in" operator', () => {
@@ -309,6 +312,9 @@ describe('KeyQL to AirtableFormula Translation Tests', () => {
 
     translation = KeyQL.translate([{Title__not_in: []}], language);
     expect(translation).to.equal('OR(AND(AND()))');
+
+    translation = KeyQL.translate([{Title__not_in: 'T-Shirt'}], language);
+    expect(translation).to.equal(`OR(AND(OR(NOT(T({Title})),NOT(SEARCH({Title},'T-Shirt')))))`);
 
   });
 
