@@ -9,7 +9,7 @@ KeyQL is a language, specification and package for querying datasets using key-v
 It is heavily inspired by the simplicity and ease-of-use of [Django](https://djangoproject.com)
 and similar ORMs.
 The provided Node.js package can be used to filter large JSON datasets from within any
-codebase, but the primary purpose of KeyQL is to be used with [FunctionScript](https://github.com/FunctionScript/FunctionScript)
+codebase, but the primary purpose of KeyQL is to be used with [FunctionScript](https://github.com/acode/FunctionScript)
 APIs, where JSON or HTTP Query Parameter key-value pairs can be used to encode
 query requests to underlying datasets.
 
@@ -26,17 +26,6 @@ can, in theory, coexist within a single codebase or API implementation.
 KeyQL is **not intended** to be used to define an entire backend architecture
 and provides no opinions on the graph-based structure of output data
 (you do not define schemas with it).
-
-# Live Demo
-
-You can play with KeyQL live, as part of a [FunctionScript](https://github.com/FunctionScript/FunctionScript) API endpoint,
-by using [Code on Standard Library](https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=functions/keyql.js). A link has been provided to a demo below.
-
-**Note:** *In order to use Code on Standard Library you must have a registered account on [stdlib.com](https://stdlib.com), available for free.*
-
-https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=functions/keyql.js
-
-[![KeyQL Demo](/images/keyql-demo.gif)](https://code.stdlib.com/?gist=1b9b61e12b8ae86f689fd07cc0f9f136&filename=functions/keyql.js)
 
 # Quick Example
 
@@ -136,7 +125,7 @@ Would return:
 By adhering to the KeyQL specification, your developers and users will have a
 significantly easier time learning how to work with your APIs and datasets.
 
-For example, you may have an HTTP API built on [Standard Library](https://stdlib.com/).
+For example, you may have an HTTP API built on [Autocode](https://autocode.com/).
 In this project, you have set up a `users/select` endpoint and want to query your
 user dataset for **every username that contains `"ke"`** in a case-insensitive
 fashion.
@@ -546,23 +535,6 @@ structure for writing queries using JSON.
 # Acknowledgements
 
 Thanks for checking out KeyQL. There's a lot more to come as the API is improved!
-
-## Corporate Interests
-
-Via investments in Polybit Inc., parent of [Standard Library](https://stdlib.com),
-the following companies have invested countless hours in and provided financial
-support for our team, which has made this project possible.
-
-[Stripe](https://stripe.com), the global leader in online payments
-
-[![Stripe Logo](/images/stripe-logo-300.png)](https://stripe.com)
-
-[Slack](https://slack.com), the online platform for work and communication
-
-[![Slack Logo](/images/slack-logo-300.png)](https://slack.com)
-
-## Special Thanks
-
 There have been a number of helpful supporters and contributors along the way,
 and both KeyQL and [FunctionScript](https://github.com/FunctionScript/FunctionScript)
 would not be possible without any of them.
@@ -572,6 +544,7 @@ would not be possible without any of them.
 - [**Keith Horwood**](https://twitter.com/keithwhor)
 - [**Jacob Lee**](https://twitter.com/hacubu)
 - [**Steve Meyer**](https://twitter.com/notoriaga)
+- [**Yusuf Musleh**](https://twitter.com/yusuf-musleh)
 
 ### Thanks to Airtable
 
@@ -587,4 +560,4 @@ Without it, this project would be unlikely to exist in present form.
 - **(High Priority)** Support type coercion of `entryValue` and `queryValue`
 - **(Low Priority)** PostgreSQL Support (re: [Nodal](https://github.com/keithwhor/nodal))
 
-KeyQL is (c) 2019 Polybit Inc.
+KeyQL is (c) 2021 Polybit Inc.
